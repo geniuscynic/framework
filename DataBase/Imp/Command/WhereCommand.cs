@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
-using DoCare.Extension.Dao.Interface.Command;
-using DoCare.Extension.Dao.visitor;
+using DoCare.Extension.DataBase.Interface.Command;
+using DoCare.Extension.DataBase.SqlProvider;
 
-namespace DoCare.Extension.Dao.Imp.Command
+
+namespace DoCare.Extension.DataBase.Imp.Command
 {
     internal class WhereCommand<T> : IWhereCommand<T>
     {
         private readonly Dictionary<string, object> _sqlPamater;
-        private readonly WhereProvider _wherevisitor = new WhereProvider();
+        private readonly WhereProvider _whereProvider = new WhereProvider();
 
         private readonly StringBuilder _whereCause = new StringBuilder();
 
@@ -23,11 +24,11 @@ namespace DoCare.Extension.Dao.Imp.Command
 
         public void Where(Expression<Func<T, bool>> predicate)
         {
-            _wherevisitor.Visit(predicate);
+            _whereProvider.Visit(predicate);
 
-            _wherevisitor.whereModel.Sql.Append(" and");
+            _whereProvider.whereModel.Sql.Append(" and");
 
-            prefix = _wherevisitor.whereModel.Prefix;
+            prefix = _whereProvider.whereModel.Prefix;
         }
 
         public void Where(string whereExpression)
@@ -39,8 +40,8 @@ namespace DoCare.Extension.Dao.Imp.Command
         {
             _whereCause.Append($" ({whereExpression}) and");
 
-            var visitor = new SetProvider();
-            visitor.Visit(predicate);
+            var provider = new SelectProvider();
+            provider.Visit(predicate);
 
             //var dic = (IDictionary<string, object>)_dynamicModel;
 
@@ -48,8 +49,7 @@ namespace DoCare.Extension.Dao.Imp.Command
             var types = model.GetType();
 
 
-
-            visitor.UpdatedFields.ForEach(t =>
+            provider.SelectFields.ForEach(t =>
             {
                 var values = types.GetProperty(t.Parameter)?.GetValue(model);
 
@@ -57,24 +57,22 @@ namespace DoCare.Extension.Dao.Imp.Command
             });
         }
 
-        public string Build(bool ignorePrefix = true)
+        public StringBuilder Build(bool ignorePrefix = true)
         {
             var sql = new StringBuilder();
             sql.Append(" where ");
 
             sql.Append(_whereCause);
 
-            sql.Append(_wherevisitor.whereModel.Sql);
+            sql.Append(_whereProvider.whereModel.Sql);
             sql.Remove(sql.Length - 3, 3);
 
-            foreach (var keyValuePair in _wherevisitor.whereModel.Parameter)
+            foreach (var keyValuePair in _whereProvider.whereModel.Parameter)
             {
                 _sqlPamater[keyValuePair.Key] = keyValuePair.Value;
             }
 
-
-
-            return sql.ToString().Replace($"{prefix}.", "");
+            return ignorePrefix ? sql.Replace($"{prefix}.", "") : sql;
         }
     }
 }

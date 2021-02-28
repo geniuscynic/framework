@@ -1,39 +1,36 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using DoCare.Extension.Dao.Common;
-using DoCare.Extension.Dao.Imp.Command;
-using DoCare.Extension.Dao.Interface.Command;
-using DoCare.Extension.Dao.Interface.Operate;
 using DoCare.Extension.Dao.visitor;
+using DoCare.Extension.DataBase.Imp.Command;
+using DoCare.Extension.DataBase.Interface.Command;
+using DoCare.Extension.DataBase.Interface.Operate;
+using DoCare.Extension.DataBase.Utility;
 
-namespace DoCare.Extension.Dao.Imp.Operate
+
+namespace DoCare.Extension.DataBase.Imp.Operate
 {
-    public class Updateable<T> : BaseSqlable<T>, IUpdateable<T>, ISqlBuilder
+    public class Updateable<T> : Provider, IUpdateable<T>
     {
-      
-
-
+        
         private readonly IWhereCommand<T> whereCommand;
 
         private readonly StringBuilder setSql = new StringBuilder();
 
-     
-
 
         public Updateable(IDbConnection connection) : base(connection)
         {
-            whereCommand = new WhereCommand<T>(_sqlPamater);
+            whereCommand = new WhereCommand<T>(SqlParameter);
         }
 
         public IUpdateable<T> SetColumns<TResult>(Expression<Func<TResult>> predicate)
         {
-            var visitor = new SetProvider();
-            visitor.Visit(predicate);
+            var setProvider = new SetProvider();
+            setProvider.Visit(predicate);
 
             //var dic = (IDictionary<string, object>)_dynamicModel;
 
@@ -41,13 +38,13 @@ namespace DoCare.Extension.Dao.Imp.Operate
             var types = model.GetType();
 
 
-            visitor.UpdatedFields.ForEach(t =>
+            setProvider.UpdatedFields.ForEach(t =>
             {
                 var values = types.GetProperty(t.Parameter)?.GetValue(model);
 
-                setSql.Append($" {t.ColumnName} = {paramterPrefix}{t.Parameter},");
+                setSql.Append($" {t.ColumnName} = {DbPrefix}{t.Parameter},");
 
-                _sqlPamater[t.Parameter] = values;
+                SqlParameter[t.Parameter] = values;
             });
 
             return this;
@@ -75,12 +72,12 @@ namespace DoCare.Extension.Dao.Imp.Operate
         }
 
 
-        public string Build(bool ignorePrefix = true)
+        private StringBuilder Build()
         {
             var sql = new StringBuilder();
 
             var type = typeof(T);
-            var (tableName, _) = DaoHelper.GetMetas(type);
+            var (tableName, _) = ProviderHelper.GetMetas(type);
 
             sql.Append($"update {tableName} set ");
 
@@ -89,31 +86,17 @@ namespace DoCare.Extension.Dao.Imp.Operate
 
             sql.Remove(sql.Length - 1, 1);
 
-            sql.Append(whereCommand.Build().Replace(DatabaseFactory.ParamterSplit, paramterPrefix));
+            sql.Append(whereCommand.Build().Replace(DatabaseFactory.ParamterSplit, DbPrefix));
 
             
-            return sql.ToString();
+            return sql;
         }
 
         public async Task<int> Execute()
         {
-            var sql = Build();
+            var command = new WriteableCommand(Connection, Build().ToString(), SqlParameter, Aop);
 
-            try
-            {
-                Aop?.OnExecuting?.Invoke(sql, _sqlPamater);
-
-                var result = await _connection.ExecuteAsync(sql, _sqlPamater);
-
-                Aop?.OnExecuted?.Invoke(sql, _sqlPamater);
-
-                return result;
-            }
-            catch
-            {
-                Aop?.OnError?.Invoke(sql, _sqlPamater);
-                throw;
-            }
+            return await command.Execute();
         }
 
 

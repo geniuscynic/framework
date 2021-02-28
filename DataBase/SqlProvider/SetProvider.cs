@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq.Expressions;
 using ConsoleApp1.Dao.Common;
-using DoCare.Extension.Dao.Common;
+using DoCare.Extension.DataBase.Utility;
 
-namespace DoCare.Extension.Dao.visitor
+
+namespace DoCare.Extension.DataBase.SqlProvider
 {
 
     public class SetProvider : ExpressionVisitor
@@ -15,7 +16,7 @@ namespace DoCare.Extension.Dao.visitor
      
         protected override MemberAssignment VisitMemberAssignment(MemberAssignment node)
         {
-            var field = ExpressionVistorHelper.VisitMember(node.Member);
+            var field = ProviderHelper.VisitMember(node.Member);
 
             UpdatedFields.Add(field);
 
@@ -28,7 +29,7 @@ namespace DoCare.Extension.Dao.visitor
 
             foreach (var nodeMember in node.Members)
             {
-                var field = ExpressionVistorHelper.VisitMember(nodeMember);
+                var field = ProviderHelper.VisitMember(nodeMember);
 
                 UpdatedFields.Add(field);
             }

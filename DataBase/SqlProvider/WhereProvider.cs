@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Reflection;
 using ConsoleApp1.Dao.Common;
 using DoCare.Extension.Dao.Common;
 
-namespace DoCare.Extension.Dao.visitor
+namespace DoCare.Extension.DataBase.SqlProvider
 {
-
 
     public class WhereProvider : ExpressionVisitor
     {

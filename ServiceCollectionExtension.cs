@@ -5,7 +5,6 @@ using Autofac;
 using DoCare.Extension.AutoFac;
 using DoCare.Extension.Configuration;
 using DoCare.Extension.Filter;
-using DoCare.ToolKit.Cache;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -61,7 +60,7 @@ namespace DoCare.Extension
 
             containerBuilder.RegisterType<HttpContextAccessor>().As<IHttpContextAccessor>().SingleInstance().PropertiesAutowired();
 
-            containerBuilder.RegisterType<DoCareMemoryCache>().As<ICache>().SingleInstance().PropertiesAutowired();
+            //containerBuilder.RegisterType<DoCareMemoryCache>().As<ICache>().SingleInstance().PropertiesAutowired();
 
             return containerBuilder;
             //containerBuilder.RegisterController(assembly);
