@@ -14,5 +14,7 @@ namespace DoCare.Extension.DataBase.Interface.Command
         Task<T> ExecuteSingle();
 
         Task<T> ExecuteSingleOrDefault();
+
+        Task<(IEnumerable<T> data, int total)> ToPageList(int pageIndex, int pageSize);
     }
 }

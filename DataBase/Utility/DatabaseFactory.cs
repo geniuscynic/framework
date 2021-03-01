@@ -1,9 +1,15 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
+using System.Text;
+using DoCare.Extension.DataBase.Imp.Command.MsSql;
+using DoCare.Extension.DataBase.Imp.Command.MySql;
+using DoCare.Extension.DataBase.Imp.Command.Oracle;
 using DoCare.Extension.DataBase.Imp.Operate;
 using DoCare.Extension.DataBase.Imp.Operate.MySqlOperate;
 using DoCare.Extension.DataBase.Imp.Operate.OracleOperate;
 using DoCare.Extension.DataBase.Imp.Operate.SqlOperate;
+using DoCare.Extension.DataBase.Interface.Command;
 using DoCare.Extension.DataBase.Interface.Operate;
 using MySql.Data.MySqlClient;
 using Oracle.ManagedDataAccess.Client;
@@ -95,6 +101,17 @@ namespace DoCare.Extension.DataBase.Utility
                 MySqlConnection _ => new MySqlDeleteable<T>(connection) { Aop = aop },
                 OracleConnection _ => new OracleDeleteable<T>(connection) { Aop = aop },
                 _ => new Deleteable<T>(connection) { Aop = aop }
+            };
+        }
+
+        public static IReaderableCommand<T> CreateReaderableCommand<T>(IDbConnection connection, StringBuilder sql, Dictionary<string, object> sqlParameter, Aop aop)
+        {
+            return connection switch
+            {
+                SqlConnection _ => new MsSqlReaderableCommand<T>(connection, sql, sqlParameter, aop),
+                MySqlConnection _ => new MySqlReaderableCommand<T>(connection, sql, sqlParameter, aop),
+                OracleConnection _ => new OracleReaderableCommand<T>(connection, sql, sqlParameter, aop),
+                _ => new OracleReaderableCommand<T>(connection, sql, sqlParameter, aop) 
             };
         }
 

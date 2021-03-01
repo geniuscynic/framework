@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30907.101
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DoCare.Extension", "DoCare.Extension.csproj", "{0F427865-2EC5-4393-B504-6499D2BF4370}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0F427865-2EC5-4393-B504-6499D2BF4370}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F427865-2EC5-4393-B504-6499D2BF4370}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F427865-2EC5-4393-B504-6499D2BF4370}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F427865-2EC5-4393-B504-6499D2BF4370}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7A41A491-8DF3-495C-BFD2-BDC59B6ABD5E}
+	EndGlobalSection
+EndGlobal

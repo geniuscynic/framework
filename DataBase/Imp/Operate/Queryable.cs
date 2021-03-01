@@ -67,7 +67,7 @@ namespace DoCare.Extension.DataBase.Imp.Operate
                 prefix = t.Prefix;
             });
             _selectField.Remove(_selectField.Length - 1, 1);
-            return new ReaderableCommand<TResult>(Connection, Build().ToString(), SqlParameter, Aop);
+            return DatabaseFactory.CreateReaderableCommand<TResult>(Connection, Build(), SqlParameter, Aop);
         }
 
 
@@ -104,37 +104,45 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
         public async Task<IEnumerable<T>> ExecuteQuery()
         {
-            var command = new ReaderableCommand<T>(Connection, Build().ToString(), SqlParameter, Aop);
+            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build(), SqlParameter, Aop);
 
             return await command.ExecuteQuery();
         }
 
         public async Task<T> ExecuteFirst()
         {
-            var command = new ReaderableCommand<T>(Connection, Build().ToString(), SqlParameter, Aop);
+            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build(), SqlParameter, Aop);
 
             return await command.ExecuteFirst();
         }
 
         public async Task<T> ExecuteFirstOrDefault()
         {
-            var command = new ReaderableCommand<T>(Connection, Build().ToString(), SqlParameter, Aop);
+            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build(), SqlParameter, Aop);
 
             return await command.ExecuteFirstOrDefault();
         }
 
         public async Task<T> ExecuteSingle()
         {
-            var command = new ReaderableCommand<T>(Connection, Build().ToString(), SqlParameter, Aop);
+            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build(), SqlParameter, Aop);
 
             return await command.ExecuteSingle();
         }
 
         public async Task<T> ExecuteSingleOrDefault()
         {
-            var command = new ReaderableCommand<T>(Connection, Build().ToString(), SqlParameter, Aop);
+            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build(), SqlParameter, Aop);
 
             return await command.ExecuteSingleOrDefault();
+        }
+
+        public async Task<(IEnumerable<T> data, int total)> ToPageList(int pageIndex, int pageSize)
+        {
+            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build(), SqlParameter, Aop);
+
+            return await command.ToPageList(pageIndex, pageSize);
+
         }
     }
 }
