@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace DoCare.Extension.Dao.Common
+namespace DoCare.Extension.DataBase.Utility
 {
     public class Aop
     {

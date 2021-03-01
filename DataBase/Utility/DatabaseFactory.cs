@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
+﻿using System.Data;
 using System.Data.SqlClient;
-using System.Reflection;
-using DoCare.Extension.Dao.Imp.Operate;
-using DoCare.Extension.Dao.Imp.Operate.MySqlOperate;
-using DoCare.Extension.Dao.Imp.Operate.OracleOperate;
-using DoCare.Extension.Dao.Imp.Operate.SqlOperate;
-using DoCare.Extension.Dao.Interface.Operate;
+using DoCare.Extension.DataBase.Imp.Operate;
+using DoCare.Extension.DataBase.Imp.Operate.MySqlOperate;
+using DoCare.Extension.DataBase.Imp.Operate.OracleOperate;
+using DoCare.Extension.DataBase.Imp.Operate.SqlOperate;
+using DoCare.Extension.DataBase.Interface.Operate;
 using MySql.Data.MySqlClient;
 using Oracle.ManagedDataAccess.Client;
 
-namespace DoCare.Extension.Dao.Common
+namespace DoCare.Extension.DataBase.Utility
 {
     public class DatabaseFactory
     {
@@ -80,7 +76,7 @@ namespace DoCare.Extension.Dao.Common
             };
         }
 
-        public static IXXQueryable<T> CreateQueryable<T>(IDbConnection connection, Aop aop)
+        public static IDoCareQueryable<T> CreateQueryable<T>(IDbConnection connection, Aop aop)
         {
             return connection switch
             {

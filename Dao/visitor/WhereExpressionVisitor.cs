@@ -2,7 +2,8 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using ConsoleApp1.Dao.Common;
-using DoCare.Extension.Dao.Common;
+using DoCare.Extension.DataBase.Utility;
+using WhereModel = DoCare.Extension.Dao.Common.WhereModel;
 
 namespace DoCare.Extension.Dao.visitor
 {

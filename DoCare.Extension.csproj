@@ -5,8 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Dao\**" />
     <Compile Remove="Jwt\**" />
+    <EmbeddedResource Remove="Dao\**" />
     <EmbeddedResource Remove="Jwt\**" />
+    <None Remove="Dao\**" />
     <None Remove="Jwt\**" />
   </ItemGroup>
 

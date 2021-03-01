@@ -5,7 +5,6 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
-using DoCare.Extension.Dao.Common;
 using DoCare.Extension.DataBase.Imp.Command;
 using DoCare.Extension.DataBase.Interface.Command;
 using DoCare.Extension.DataBase.Interface.Operate;

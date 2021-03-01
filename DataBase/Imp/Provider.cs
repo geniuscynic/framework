@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
-using DoCare.Extension.Dao.Common;
+using DoCare.Extension.DataBase.Utility;
 
 namespace DoCare.Extension.DataBase.Imp
 {

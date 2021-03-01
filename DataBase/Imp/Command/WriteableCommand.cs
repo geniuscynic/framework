@@ -2,8 +2,8 @@
 using System.Data;
 using System.Threading.Tasks;
 using Dapper;
-using DoCare.Extension.Dao.Common;
 using DoCare.Extension.DataBase.Interface.Command;
+using DoCare.Extension.DataBase.Utility;
 
 namespace DoCare.Extension.DataBase.Imp.Command
 {

@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using DoCare.Extension.Dao.Common;
-using DoCare.Extension.Dao.Imp.Operate;
-using DoCare.Extension.Dao.Interface.Operate;
+using DoCare.Extension.DataBase.Interface.Operate;
+using DoCare.Extension.DataBase.Utility;
 using log4net;
 using Newtonsoft.Json;
-using Oracle.ManagedDataAccess.Client;
 
-namespace DoCare.Extension.Dao
+namespace DoCare.Extension.DataBase
 {
     public class Dbclient : IDisposable
     {
@@ -65,7 +63,7 @@ namespace DoCare.Extension.Dao
         }
 
 
-        public IXXQueryable<T> Queryable<T>()
+        public IDoCareQueryable<T> Queryable<T>()
         {
             return DatabaseFactory.CreateQueryable<T>(_connection, Aop);
         }

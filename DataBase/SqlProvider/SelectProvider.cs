@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq.Expressions;
-using ConsoleApp1.Dao.Common;
 using DoCare.Extension.DataBase.Utility;
 
 namespace DoCare.Extension.DataBase.SqlProvider

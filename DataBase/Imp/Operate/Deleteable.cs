@@ -4,11 +4,10 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
-using DoCare.Extension.Dao.Common;
-using DoCare.Extension.Dao.Imp.Operate;
-using DoCare.Extension.Dao.Interface.Command;
-using DoCare.Extension.Dao.Interface.Operate;
 using DoCare.Extension.DataBase.Imp.Command;
+using DoCare.Extension.DataBase.Interface.Command;
+using DoCare.Extension.DataBase.Interface.Operate;
+using DoCare.Extension.DataBase.Utility;
 
 namespace DoCare.Extension.DataBase.Imp.Operate
 {
@@ -20,7 +19,7 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
         public Deleteable(IDbConnection connection) : base(connection)
         {
-            whereCommand = new Dao.Imp.Command.WhereCommand<T>(SqlParameter);
+            whereCommand = new WhereCommand<T>(SqlParameter);
         }
 
         public IDeleteable<T> Where(Expression<Func<T, bool>> predicate)
@@ -50,7 +49,7 @@ namespace DoCare.Extension.DataBase.Imp.Operate
             var sql = new StringBuilder();
 
             var type = typeof(T);
-            var (tableName, _) = DaoHelper.GetMetas(type);
+            var (tableName, _) = ProviderHelper.GetMetas(type);
 
             sql.Append($"delete from {tableName}  ");
 

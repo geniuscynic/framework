@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using Dapper;
-using DoCare.Extension.Dao.Common;
 using DoCare.Extension.DataBase.Interface.Command;
+using DoCare.Extension.DataBase.Utility;
 using Org.BouncyCastle.Crypto.Modes.Gcm;
 
 namespace DoCare.Extension.DataBase.Imp.Command

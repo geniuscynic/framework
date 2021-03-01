@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq.Expressions;
-using ConsoleApp1.Dao.Common;
-using DoCare.Extension.Dao.Common;
+using DoCare.Extension.DataBase.Utility;
+
 
 namespace DoCare.Extension.DataBase.SqlProvider
 {
@@ -79,7 +79,7 @@ namespace DoCare.Extension.DataBase.SqlProvider
             if (node.Expression is ParameterExpression)
             {
 
-                var member = ExpressionVistorHelper.VisitMember(node);
+                var member = ProviderHelper.VisitMember(node);
 
                 whereModel.Prefix = member.Prefix;
                 whereModel.Sql.Append(member.Express);
