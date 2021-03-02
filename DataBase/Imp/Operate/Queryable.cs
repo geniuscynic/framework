@@ -19,18 +19,21 @@ namespace DoCare.Extension.DataBase.Imp.Operate
        
 
         private readonly IWhereCommand<T> whereCommand;
+        private readonly IOrderByCommand<T> orderByCommand;
 
         private readonly StringBuilder _selectField = new StringBuilder();
 
         
         private string prefix = "";
 
-        private readonly  StringBuilder _sortSql = new StringBuilder();
+        //private readonly  StringBuilder _sortSql = new StringBuilder();
        
 
         public Queryable(IDbConnection connection)  : base(connection)
         {
             whereCommand = new WhereCommand<T>(SqlParameter);
+
+            orderByCommand = new OrderByCommand<T>();
         }
 
         public IDoCareQueryable<T> Where(Expression<Func<T, bool>> predicate)
@@ -58,15 +61,7 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
         public IDoCareQueryable<T> OrderBy<TResult>(Expression<Func<T, TResult>> predicate)
         {
-            var provider = new SelectProvider();
-            provider.Visit(predicate);
-
-            provider.SelectFields.ForEach(t =>
-            {
-                _sortSql.Append($"{t.ColumnName},");
-
-                prefix = t.Prefix;
-            });
+            orderByCommand.OrderBy(predicate);
 
 
             return this;
@@ -74,15 +69,7 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
         public IDoCareQueryable<T> OrderByDesc<TResult>(Expression<Func<T, TResult>> predicate)
         {
-            var provider = new SelectProvider();
-            provider.Visit(predicate);
-
-            provider.SelectFields.ForEach(t =>
-            {
-                _sortSql.Append($"{t.ColumnName} desc,");
-
-                prefix = t.Prefix;
-            });
+            orderByCommand.OrderByDesc(predicate);
 
             return this;
         }
@@ -131,12 +118,7 @@ namespace DoCare.Extension.DataBase.Imp.Operate
             
             sql.Append(whereCommand.Build().Replace(DatabaseFactory.ParamterSplit, DbPrefix));
 
-            if (_sortSql.Length > 0)
-            {
-                sql.Append(" order by ");
-                sql.Append(_sortSql);
-                sql.Remove(sql.Length - 1, 1);
-            }
+            sql.Append(orderByCommand.Build());
 
             return sql;
         }

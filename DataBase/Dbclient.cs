@@ -74,6 +74,11 @@ namespace DoCare.Extension.DataBase
             return DatabaseFactory.CreateDeleteable<T>(_connection, Aop);
         }
 
+        public IDbConnection GetConnection()
+        {
+            return _connection;
+        }
+
         public void Dispose()
         {
             _connection?.Dispose();

@@ -1,9 +1,0 @@
-D:\workplace\git\study\net\framework\obj\Debug\netcoreapp3.1\DoCare.Extension.csprojAssemblyReference.cache
-D:\workplace\git\study\net\framework\obj\Debug\netcoreapp3.1\DoCare.Extension.AssemblyInfoInputs.cache
-D:\workplace\git\study\net\framework\obj\Debug\netcoreapp3.1\DoCare.Extension.AssemblyInfo.cs
-D:\workplace\git\study\net\framework\obj\Debug\netcoreapp3.1\DoCare.Extension.csproj.CoreCompileInputs.cache
-D:\workplace\git\study\net\framework\bin\Debug\netcoreapp3.1\DoCare.Extension.deps.json
-D:\workplace\git\study\net\framework\bin\Debug\netcoreapp3.1\DoCare.Extension.dll
-D:\workplace\git\study\net\framework\bin\Debug\netcoreapp3.1\DoCare.Extension.pdb
-D:\workplace\git\study\net\framework\obj\Debug\netcoreapp3.1\DoCare.Extension.dll
-D:\workplace\git\study\net\framework\obj\Debug\netcoreapp3.1\DoCare.Extension.pdb
