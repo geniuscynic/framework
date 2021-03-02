@@ -25,13 +25,13 @@ namespace DoCare.Extension.DataBase
                 OnError = (sql, paramter) =>
                 {
                     
-                    logger.Error($"Sql:  {sql}, \r\n paramter: {JsonConvert.SerializeObject(paramter)}");
+                    logger?.Error($"Sql:  {sql}, \r\n paramter: {JsonConvert.SerializeObject(paramter)}");
                     //Console.WriteLine(sql);
                 },
                 OnExecuting = (sql, paramter) =>
                 {
                     //Console.WriteLine(sql);
-                    logger.InfoFormat("Sql: \r\n{0}", sql);
+                    logger?.InfoFormat("Sql: \r\n{0}", sql);
                 },
 
             };

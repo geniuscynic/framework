@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,13 +20,13 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
         private readonly IWhereCommand<T> whereCommand;
 
-       
-
         private readonly StringBuilder _selectField = new StringBuilder();
 
         
-
         private string prefix = "";
+
+        private readonly  StringBuilder _sortSql = new StringBuilder();
+       
 
         public Queryable(IDbConnection connection)  : base(connection)
         {
@@ -53,6 +54,37 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
             return this;
           
+        }
+
+        public IDoCareQueryable<T> OrderBy<TResult>(Expression<Func<T, TResult>> predicate)
+        {
+            var provider = new SelectProvider();
+            provider.Visit(predicate);
+
+            provider.SelectFields.ForEach(t =>
+            {
+                _sortSql.Append($"{t.ColumnName},");
+
+                prefix = t.Prefix;
+            });
+
+
+            return this;
+        }
+
+        public IDoCareQueryable<T> OrderByDesc<TResult>(Expression<Func<T, TResult>> predicate)
+        {
+            var provider = new SelectProvider();
+            provider.Visit(predicate);
+
+            provider.SelectFields.ForEach(t =>
+            {
+                _sortSql.Append($"{t.ColumnName} desc,");
+
+                prefix = t.Prefix;
+            });
+
+            return this;
         }
 
         public IReaderableCommand<TResult> Select<TResult>(Expression<Func<T,TResult>> predicate)
@@ -94,9 +126,17 @@ namespace DoCare.Extension.DataBase.Imp.Operate
             }
 
 
-            sql.Append($"select {selectSql} from {tableName} {prefix} ");
+            sql.Append($"select {selectSql} from {tableName} ");
 
+            
             sql.Append(whereCommand.Build().Replace(DatabaseFactory.ParamterSplit, DbPrefix));
+
+            if (_sortSql.Length > 0)
+            {
+                sql.Append(" order by ");
+                sql.Append(_sortSql);
+                sql.Remove(sql.Length - 1, 1);
+            }
 
             return sql;
         }
