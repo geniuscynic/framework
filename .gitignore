@@ -266,3 +266,4 @@ bin
 obj
 bin/
 obj/
+.vs

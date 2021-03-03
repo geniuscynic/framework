@@ -13,10 +13,10 @@ namespace DoCare.Extension.SqlHelper
 
         private readonly IDbConnection _connection;
 
-        protected Aop Aop { get; set; }
-        public Dbclient(string connectionString)
+        public Aop Aop { get; set; }
+        public Dbclient(string connectionString, string provider)
         {
-            _connection = DatabaseFactory.CreateConnection(connectionString);
+            _connection = DatabaseFactory.CreateConnection(connectionString, provider);
 
             //Aop = new Aop()
             //{
