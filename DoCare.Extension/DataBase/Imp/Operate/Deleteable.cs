@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
@@ -49,13 +50,30 @@ namespace DoCare.Extension.DataBase.Imp.Operate
             var sql = new StringBuilder();
 
             var type = typeof(T);
-            var (tableName, _) = ProviderHelper.GetMetas(type);
+            var (tableName, properties) = ProviderHelper.GetMetas(type);
 
             sql.Append($"delete from {tableName}  ");
 
             //sql.Append(" where ");
+            var where = whereCommand.Build().Replace(DatabaseFactory.ParamterSplit, DbPrefix);
 
-            sql.Append(whereCommand.Build().Replace(DatabaseFactory.ParamterSplit, DbPrefix));
+            if (where.Length > 0)
+            {
+                sql.Append(where);
+            }
+            else
+            {
+                sql.Append(" where ");
+
+                foreach (var member in properties.Where(t => t.IsPrimaryKey))
+                {
+                    sql.Append($" {member.ColumnName} = {DbPrefix}{member.Parameter} and");
+                }
+
+                sql.Remove(sql.Length - 3, 3);
+            }
+
+
 
             //sql.Remove(sql.Length - 3, 3);
 

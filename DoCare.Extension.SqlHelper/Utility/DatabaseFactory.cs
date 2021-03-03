@@ -18,11 +18,19 @@ namespace DoCare.Extension.SqlHelper.Utility
     {
         public const string ParamterSplit = "@@@";
 
-        public static IDbConnection CreateConnection(string connectionString)
+        public static IDbConnection CreateConnection(string connectionString, string provider)
         {
-            return new OracleConnection(connectionString);
+            if (provider == DatabaseProvider.MsSql.ToString())
+            {
+                return new SqlConnection(connectionString);
+            }
             
+            if (provider == DatabaseProvider.Oracle.ToString())
+            {
+                return new OracleConnection(connectionString);
+            }
 
+            return null;
         }
 
         public static string GetStatementPrefix(IDbConnection dbConnection)
@@ -33,6 +41,7 @@ namespace DoCare.Extension.SqlHelper.Utility
 
         public static IInsertable<T> CreateInsertable<T, TEntity>(IDbConnection connection, TEntity model, Aop aop)
         {
+            
             return new OracleInsertable<T, TEntity>(connection, model) { Aop = aop };
         }
 
