@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
@@ -13,8 +14,21 @@ namespace DoCare.Extension.DataBase.Utility
         MySql
     }
 
-    
-    
+
+    public enum JoinType
+    {
+        Left,
+        Inner
+    }
+
+    public class JoinInfo
+    {
+        public JoinInfo(JoinType joinType, Expression<Func<>>)
+    }
+    public class JoinInfos
+    {
+        public JoinInfos(JoinType joinType, )
+    }
 
 
     [AttributeUsage(AttributeTargets.Class)]

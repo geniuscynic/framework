@@ -68,6 +68,11 @@ namespace DoCare.Extension.DataBase
             return DatabaseFactory.CreateQueryable<T>(_connection, Aop);
         }
 
+        public IComplexQueryable<T> ComplexQueryable<T>()
+        {
+            return DatabaseFactory.CreateComplexQueryable<T>(_connection, Aop);
+        }
+
 
         public IDeleteable<T> Deleteable<T>()
         {

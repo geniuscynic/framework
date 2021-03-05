@@ -16,8 +16,6 @@ namespace DoCare.Extension.DataBase.Imp.Operate
     {
         private readonly  IWhereCommand<T> whereCommand;
 
-      
-
         public Deleteable(IDbConnection connection) : base(connection)
         {
             whereCommand = new WhereCommand<T>(SqlParameter);
