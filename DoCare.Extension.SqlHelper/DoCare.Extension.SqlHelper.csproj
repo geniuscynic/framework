@@ -41,8 +41,9 @@
     <Reference Include="DoCare.ToolKit">
       <HintPath>..\..\..\..\..\..\..\专科数据库\Lib\DoCare.ToolKit.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\专科数据库\Src\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Oracle.ManagedDataAccess, Version=4.122.19.1, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
       <HintPath>..\packages\Oracle.ManagedDataAccess.19.10.1\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
@@ -99,6 +100,7 @@
     <Compile Include="SqlProvider\SelectProvider.cs" />
     <Compile Include="SqlProvider\SetProvider.cs" />
     <Compile Include="SqlProvider\WhereProvider.cs" />
+    <Compile Include="Tool\StringListTool.cs" />
     <Compile Include="Utility\Aop.cs" />
     <Compile Include="Utility\DatabaseFactory.cs" />
     <Compile Include="Utility\Model.cs" />
@@ -108,5 +110,6 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

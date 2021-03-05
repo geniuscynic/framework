@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
@@ -54,36 +55,31 @@ namespace DoCare.Extension.SqlHelper.Imp.Operate
 
             sql.Append($"update {tableName} set ");
 
+            IEnumerable<Member> existProperty;
+
             if (_selectProvider.SelectFields.Any())
             {
-                _selectProvider.SelectFields.ForEach(t =>
-                {
-                    sql.Append($" {t.ColumnName} = {DbPrefix}{t.Parameter},");
-                });
-
-                sql.Remove(sql.Length - 1, 1);
-                sql.Append(" where ");
-
-                foreach (var member in properties.Where(t => t.IsPrimaryKey))
-                {
-                    sql.Append($" {member.ColumnName} = {DbPrefix}{member.Parameter} and");
-                }
+                existProperty = properties.Where(p => _selectProvider.SelectFields.All(t => t.ColumnName != p.ColumnName));
             }
             else
             {
-                var existProperty = properties.Where(p => !p.IsPrimaryKey && _ignoreProvider.SelectFields.All(t => t.ColumnName != p.ColumnName));
-                foreach (var p in existProperty)
-                {
-                    sql.Append($" {p.ColumnName} = {DbPrefix}{p.Parameter},");
-                }
+                existProperty = properties.Where(p => !p.IsPrimaryKey && _ignoreProvider.SelectFields.All(t => t.ColumnName != p.ColumnName));
+            }
 
-                sql.Remove(sql.Length - 1, 1);
-                sql.Append(" where ");
+            foreach (var p in existProperty)
+            {
+                sql.Append($" {p.ColumnName} = {DbPrefix}{p.Parameter},");
+                SqlParameter.Add(p.Parameter, p.PropertyInfo.GetValue(_model));
+            }
 
-                foreach (var member in properties.Where(t => t.IsPrimaryKey))
-                {
-                    sql.Append($" {member.ColumnName} = {DbPrefix}{member.Parameter} and");
-                }
+            sql.Remove(sql.Length - 1, 1);
+
+            sql.Append(" where ");
+
+            foreach (var member in properties.Where(t => t.IsPrimaryKey))
+            {
+                sql.Append($" {member.ColumnName} = {DbPrefix}{member.Parameter} and");
+                SqlParameter.Add(member.Parameter, member.PropertyInfo.GetValue(_model));
             }
 
             sql.Remove(sql.Length - 3, 3);

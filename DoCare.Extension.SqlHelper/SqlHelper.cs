@@ -54,13 +54,13 @@ namespace DoCare.Extension.SqlHelper
                 OnError = (sql, paramter) =>
                 {
 
-                    logger?.Error($"Sql:  {sql}, \r\n paramter: {JsonConvert.SerializeObject(paramter)}");
+                    logger?.Error($"Sql:  {sql},\r\n paramter: {JsonConvert.SerializeObject(paramter)}");
                     //Console.WriteLine(sql);
                 },
                 OnExecuting = (sql, paramter) =>
                 {
                     //Console.WriteLine(sql);
-                    logger?.InfoFormat($"Sql:  {sql}, \r\n paramter: {JsonConvert.SerializeObject(paramter)}");
+                    logger?.Info($"Sql:  {sql}, \r\n paramter: {JsonConvert.SerializeObject(paramter)}");
                 },
 
             };
@@ -110,10 +110,26 @@ namespace DoCare.Extension.SqlHelper
             return dbClient.Updateable<T>().SetColumns(predicate).Where(where).Execute().Result;
         }
 
-        
+        public int UpdateByPK(T entity)
+        {
+            return Save(entity);
+        }
+
+        public T SelectTopOne(Expression<Func<T, bool>> where)
+        {
+            return dbClient.Queryable<T>().Where(where).ExecuteFirstOrDefault().Result;
+        }
+
+        public List<T> Select(Expression<Func<T, bool>> where)
+        {
+            return dbClient.Queryable<T>().Where(where).ExecuteQuery().Result.ToList();
+        }
+
+
+
         public int Save(T entity)
         {
-            return dbClient.Saveable<T>(entity).Execute().Result;
+            return dbClient.Saveable(entity).Execute().Result;
         }
 
        
