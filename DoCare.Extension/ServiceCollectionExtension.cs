@@ -8,6 +8,8 @@ using DoCare.Extension.Filter;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using DoCareMemoryCache = DoCare.Extension.Cache.DoCareMemoryCache;
+using ICache = DoCare.Extension.Cache.ICache;
 
 namespace DoCare.Extension
 {
@@ -17,7 +19,7 @@ namespace DoCare.Extension
         public static IServiceCollection AddCommonSetup(this IServiceCollection services, IConfiguration configuration)
         {
             //services.AddSingleton(new ConfigurationManager(configuration));
-           // services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            //services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddControllers(configure =>
             {
@@ -60,7 +62,7 @@ namespace DoCare.Extension
 
             containerBuilder.RegisterType<HttpContextAccessor>().As<IHttpContextAccessor>().SingleInstance().PropertiesAutowired();
 
-            //containerBuilder.RegisterType<DoCareMemoryCache>().As<ICache>().SingleInstance().PropertiesAutowired();
+            containerBuilder.RegisterInstance(new DoCareMemoryCache()).As<ICache>().PropertiesAutowired();
 
             return containerBuilder;
             //containerBuilder.RegisterController(assembly);

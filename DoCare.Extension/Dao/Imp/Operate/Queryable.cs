@@ -11,7 +11,6 @@ using DoCare.Extension.Dao.Imp.Command;
 using DoCare.Extension.Dao.Interface.Command;
 using DoCare.Extension.Dao.Interface.Operate;
 using DoCare.Extension.Dao.visitor;
-using DoCare.Extension.DataBase.Utility;
 
 namespace DoCare.Extension.Dao.Imp.Operate
 {

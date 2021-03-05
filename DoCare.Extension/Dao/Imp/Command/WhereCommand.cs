@@ -4,13 +4,14 @@ using System.Linq.Expressions;
 using System.Text;
 using DoCare.Extension.Dao.Interface.Command;
 using DoCare.Extension.Dao.visitor;
+using Org.BouncyCastle.Crypto.Macs;
 
 namespace DoCare.Extension.Dao.Imp.Command
 {
     internal class WhereCommand<T> : IWhereCommand<T>
     {
         private readonly Dictionary<string, object> _sqlPamater;
-        private readonly WhereProvider _wherevisitor = new WhereProvider();
+        private readonly WhereExpressionVisitor _wherevisitor = new WhereExpressionVisitor();
 
         private readonly StringBuilder _whereCause = new StringBuilder();
 
@@ -28,6 +29,8 @@ namespace DoCare.Extension.Dao.Imp.Command
             _wherevisitor.whereModel.Sql.Append(" and");
 
             prefix = _wherevisitor.whereModel.Prefix;
+
+
         }
 
         public void Where(string whereExpression)
@@ -39,7 +42,7 @@ namespace DoCare.Extension.Dao.Imp.Command
         {
             _whereCause.Append($" ({whereExpression}) and");
 
-            var visitor = new SetProvider();
+            var visitor = new NewObjectExpressionVisitor();
             visitor.Visit(predicate);
 
             //var dic = (IDictionary<string, object>)_dynamicModel;
@@ -72,6 +75,7 @@ namespace DoCare.Extension.Dao.Imp.Command
                 _sqlPamater[keyValuePair.Key] = keyValuePair.Value;
             }
 
+            where a=@p1 and (b=@p2   Oracle     )
 
 
             return sql.ToString().Replace($"{prefix}.", "");

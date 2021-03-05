@@ -6,7 +6,7 @@ using DoCare.Extension.Dao.Common;
 namespace DoCare.Extension.Dao.visitor
 {
 
-    public class SetProvider : ExpressionVisitor
+    public class NewObjectExpressionVisitor : ExpressionVisitor
     {
 
         public List<Field> UpdatedFields = new List<Field>();

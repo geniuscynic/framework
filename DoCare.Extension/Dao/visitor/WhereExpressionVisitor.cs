@@ -2,14 +2,13 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using ConsoleApp1.Dao.Common;
-using DoCare.Extension.DataBase.Utility;
-using WhereModel = DoCare.Extension.Dao.Common.WhereModel;
+using DoCare.Extension.Dao.Common;
 
 namespace DoCare.Extension.Dao.visitor
 {
 
 
-    public class WhereProvider : ExpressionVisitor
+    public class WhereExpressionVisitor : ExpressionVisitor
     {
         //public List<WhereModel> Result = new List<WhereModel>();
 
@@ -41,7 +40,7 @@ namespace DoCare.Extension.Dao.visitor
                 whereModel.Sql.Append(ExpressionTypeMapping[node.NodeType]);
             }
 
-            //var result  = Expression.Lambda(node.Right).Compile().DynamicInvoke();
+
             Visit(node.Right);
 
             whereModel.Sql.Append(")");
@@ -87,11 +86,37 @@ namespace DoCare.Extension.Dao.visitor
                 whereModel.Prefix = member.Prefix;
                 whereModel.Sql.Append(member.Express);
             }
-            else 
+            else if (node.Expression is ConstantExpression)
             {
-              
+                var expression = node.Expression;
 
-                var value = Expression.Lambda(node).Compile().DynamicInvoke();
+                object container = ((ConstantExpression)expression).Value;
+                var member = node.Member;
+                if (member is FieldInfo)
+                {
+                    object value = ((FieldInfo)member).GetValue(container);
+
+                    AddConstant(value);
+                    return Expression.Constant(value);
+                }
+
+                if (member is PropertyInfo)
+                {
+                    object value = ((PropertyInfo)member).GetValue(container, null);
+
+                    AddConstant(value);
+                    return Expression.Constant(value);
+                }
+
+            }
+            else if(node.Expression is MemberExpression && node.Member is PropertyInfo)
+            {
+                var expression = (MemberExpression) node.Expression;
+                object container = ((ConstantExpression)expression.Expression).Value;
+                var obj1 = ((FieldInfo)expression.Member).GetValue(container);
+
+                object value = ((PropertyInfo)node.Member).GetValue(obj1, null);
+
                 AddConstant(value);
                 return Expression.Constant(value);
             }
