@@ -15,7 +15,7 @@ namespace DoCare.Extension.DataBase.Imp.Command
 
         private readonly StringBuilder _whereCause = new StringBuilder();
 
-        private string prefix = "";
+        public string prefix = "";
 
         public WhereCommand(Dictionary<string, object> sqlPamater)
         {

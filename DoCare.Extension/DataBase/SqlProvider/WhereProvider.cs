@@ -27,7 +27,7 @@ namespace DoCare.Extension.DataBase.SqlProvider
 
         protected override Expression VisitBinary(BinaryExpression node)
         {
-            whereModel.Sql.Append("(");
+            whereModel.Sql.Append(" (");
 
             Visit(node.Left);
             
@@ -41,7 +41,7 @@ namespace DoCare.Extension.DataBase.SqlProvider
             //var result  = Expression.Lambda(node.Right).Compile().DynamicInvoke();
             Visit(node.Right);
 
-            whereModel.Sql.Append(")");
+            whereModel.Sql.Append(") ");
 
             return node;
         }

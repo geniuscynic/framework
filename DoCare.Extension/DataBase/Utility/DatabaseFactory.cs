@@ -93,6 +93,17 @@ namespace DoCare.Extension.DataBase.Utility
             };
         }
 
+        public static IComplexQueryable<T> CreateComplexQueryable<T>(IDbConnection connection, Aop aop)
+        {
+            return connection switch
+            {
+                SqlConnection _ => new ComplexQueryable<T>(connection) { Aop = aop },
+                MySqlConnection _ => new ComplexQueryable<T>(connection) { Aop = aop },
+                OracleConnection _ => new ComplexQueryable<T>(connection) { Aop = aop },
+                _ => new ComplexQueryable<T>(connection) { Aop = aop }
+            };
+        }
+
         public static IDeleteable<T> CreateDeleteable<T>(IDbConnection connection, Aop aop)
         {
             return connection switch

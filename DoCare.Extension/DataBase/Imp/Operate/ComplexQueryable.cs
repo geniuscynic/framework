@@ -14,26 +14,26 @@ using DoCare.Extension.DataBase.Utility;
 
 namespace DoCare.Extension.DataBase.Imp.Operate
 {
-    public class Queryable<T> : Provider, IDoCareQueryable<T>
+    public class ComplexQueryable<T> :  Provider, IComplexQueryable<T>
     {
-        private readonly IWhereCommand<T> whereCommand;
+        private readonly WhereCommand<T> whereCommand;
         private readonly IOrderByCommand<T> orderByCommand;
 
         private readonly StringBuilder _selectField = new StringBuilder();
 
-        
+
         private string prefix = "";
 
         //private readonly  StringBuilder _sortSql = new StringBuilder();
-        
-        public Queryable(IDbConnection connection)  : base(connection)
+
+        public ComplexQueryable(IDbConnection connection) : base(connection)
         {
             whereCommand = new WhereCommand<T>(SqlParameter);
 
             orderByCommand = new OrderByCommand<T>();
         }
 
-        public IDoCareQueryable<T> Where(Expression<Func<T, bool>> predicate)
+        public IComplexQueryable<T> Where(Expression<Func<T, bool>> predicate)
         {
             whereCommand.Where(predicate);
 
@@ -41,22 +41,22 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
         }
 
-        public IDoCareQueryable<T> Where(string whereExpression)
+        public IComplexQueryable<T> Where(string whereExpression)
         {
             whereCommand.Where(whereExpression);
 
             return this;
         }
 
-        public IDoCareQueryable<T> Where<TEntity>(string whereExpression, Expression<Func<TEntity>> predicate)
+        public IComplexQueryable<T> Where<TEntity>(string whereExpression, Expression<Func<TEntity>> predicate)
         {
             whereCommand.Where(whereExpression, predicate);
 
             return this;
-          
+
         }
 
-        public IDoCareQueryable<T> OrderBy<TResult>(Expression<Func<T, TResult>> predicate)
+        public IComplexQueryable<T> OrderBy<TResult>(Expression<Func<T, TResult>> predicate)
         {
             orderByCommand.OrderBy(predicate);
 
@@ -64,14 +64,14 @@ namespace DoCare.Extension.DataBase.Imp.Operate
             return this;
         }
 
-        public IDoCareQueryable<T> OrderByDesc<TResult>(Expression<Func<T, TResult>> predicate)
+        public IComplexQueryable<T> OrderByDesc<TResult>(Expression<Func<T, TResult>> predicate)
         {
             orderByCommand.OrderByDesc(predicate);
 
             return this;
         }
 
-        public IReaderableCommand<TResult> Select<TResult>(Expression<Func<T,TResult>> predicate)
+        public IReaderableCommand<TResult> Select<TResult>(Expression<Func<T, TResult>> predicate)
         {
             var provider = new SelectProvider();
             provider.Visit(predicate);
@@ -89,6 +89,8 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
         private StringBuilder Build()
         {
+            prefix = whereCommand.prefix;
+
             var sql = new StringBuilder();
 
             var type = typeof(T);
@@ -97,25 +99,25 @@ namespace DoCare.Extension.DataBase.Imp.Operate
             var selectSql = new StringBuilder();
             if (_selectField.Length > 0)
             {
-                selectSql.Append( _selectField);
+                selectSql.Append(_selectField);
             }
             else
             {
                 foreach (var property in properties)
                 {
-                    selectSql.Append($"{property.ColumnName} as {property.Parameter},");
+                    selectSql.Append($"{prefix}.{property.ColumnName} as {property.Parameter},");
                 }
 
                 selectSql.Remove(selectSql.Length - 1, 1);
             }
 
 
-            sql.Append($"select {selectSql} from {tableName} ");
+            sql.Append($"select {selectSql} from {tableName} {prefix}");
 
-            
-            sql.Append(whereCommand.Build().Replace(DatabaseFactory.ParamterSplit, DbPrefix));
 
-            sql.Append(orderByCommand.Build());
+            sql.Append(whereCommand.Build(false).Replace(DatabaseFactory.ParamterSplit, DbPrefix));
+
+            sql.Append(orderByCommand.Build(false));
 
             return sql;
         }
@@ -162,6 +164,34 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
             return await command.ToPageList(pageIndex, pageSize);
 
+        }
+
+    }
+
+    public class ComplexQueryable<T1, T2> : ComplexQueryable<T1>, IComplexQueryable<T1, T2>
+    {
+        public ComplexQueryable(IDbConnection connection) : base(connection)
+        {
+        }
+
+        public ComplexQueryable(IDbConnection connection, Expression<Func<T1,T2, bool>> join) : base(connection)
+        {
+
+        }
+
+        public IComplexQueryable<T1, T2> Where(Expression<Func<T1, T2, bool>> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IComplexQueryable<T1, T2> OrderBy<TResult>(Expression<Func<T1, T2, TResult>> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IComplexQueryable<T1, T2> OrderByDesc<TResult>(Expression<Func<T1, T2, TResult>> predicate)
+        {
+            throw new NotImplementedException();
         }
     }
 }
