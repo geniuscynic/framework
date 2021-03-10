@@ -14,45 +14,30 @@ using DoCare.Extension.DataBase.Utility;
 
 namespace DoCare.Extension.DataBase.Imp.Operate
 {
-     
-
-    public class ComplexQueryable<T> :  Provider, IComplexQueryable<T>
+    public class ComplexQueryable<T> :   IComplexQueryable<T>
     {
-        protected readonly string _alias;
-        protected readonly WhereCommand whereCommand;
-        private readonly IOrderByCommand<T> orderByCommand;
+        private readonly IQueryableProvider _provider;
 
-        private readonly StringBuilder _selectField = new StringBuilder();
-        protected StringBuilder _joinSql = new StringBuilder();
-        //private readonly StringBuilder _selectField = new StringBuilder();
-
-
-      
 
         //private readonly  StringBuilder _sortSql = new StringBuilder();
 
-        public ComplexQueryable(IDbConnection connection, string alias) : base(connection)
+        public ComplexQueryable(IQueryableProvider provider)
         {
-            _alias = alias;
-            whereCommand = new WhereCommand(SqlParameter);
-
-            orderByCommand = new OrderByCommand<T>();
+            _provider = provider;
+            _provider = provider;
         }
 
        
         public IComplexQueryable<T, T2> Join<T2>(string alias, Expression<Func<T, T2, bool>> predicate)
         {
-            var joinCommand = new JoinCommand(alias, SqlParameter);
-            joinCommand.Join(predicate);
+            _provider.Join(alias,predicate);
 
-            _joinSql.Append(joinCommand.Build<T2>());
-            
-            return new ComplexQueryable<T, T2>(Connection, _alias, _joinSql, SqlParameter);
+            return new ComplexQueryable<T, T2>(_provider);
         }
 
         public IComplexQueryable<T> Where(Expression<Func<T, bool>> predicate)
         {
-            whereCommand.Where(predicate);
+            _provider.Where(predicate);
 
             return this;
 
@@ -60,14 +45,14 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
         public IComplexQueryable<T> Where(string whereExpression)
         {
-            whereCommand.Where(whereExpression);
+            _provider.Where(whereExpression);
 
             return this;
         }
 
         public IComplexQueryable<T> Where<TEntity>(string whereExpression, Expression<Func<TEntity>> predicate)
         {
-            whereCommand.Where(whereExpression, predicate);
+            _provider.Where(whereExpression, predicate);
 
             return this;
 
@@ -75,7 +60,7 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
         public IComplexQueryable<T> OrderBy<TResult>(Expression<Func<T, TResult>> predicate)
         {
-            orderByCommand.OrderBy(predicate);
+            _provider.OrderBy(predicate);
 
 
             return this;
@@ -83,105 +68,48 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
         public IComplexQueryable<T> OrderByDesc<TResult>(Expression<Func<T, TResult>> predicate)
         {
-            orderByCommand.OrderByDesc(predicate);
+            _provider.OrderByDesc(predicate);
 
             return this;
         }
 
         public IReaderableCommand<TResult> Select<TResult>(Expression<Func<T, TResult>> predicate)
         {
-            var provider = new SelectProvider();
-            provider.Visit(predicate);
-
-            provider.SelectFields.ForEach(t =>
-            {
-                _selectField.Append($"{t.Prefix}.{t.ColumnName} as {t.Parameter},");
-
-                //prefix = t.Prefix;
-            });
-            _selectField.Remove(_selectField.Length - 1, 1);
-            return DatabaseFactory.CreateReaderableCommand<TResult>(Connection, Build(), SqlParameter, Aop);
+            return _provider.Select(predicate);
         }
 
 
-        private StringBuilder Build()
-        {
-            //prefix = whereCommand.prefix;
-
-            var sql = new StringBuilder();
-
-            var type = typeof(T);
-            var (tableName, properties) = ProviderHelper.GetMetas(type);
-
-            var selectSql = new StringBuilder();
-            if (_selectField.Length > 0)
-            {
-                selectSql.Append(_selectField);
-            }
-            else
-            {
-                foreach (var property in properties)
-                {
-                    selectSql.Append($"{_alias}.{property.ColumnName} as {property.Parameter},");
-                }
-
-                selectSql.Remove(selectSql.Length - 1, 1);
-            }
-
-
-            sql.Append($"select {selectSql} from {tableName} {_alias} {_joinSql}");
-
-
-            sql.Append(whereCommand.Build(false).Replace(DatabaseFactory.ParamterSplit, DbPrefix));
-
-            sql.Append(orderByCommand.Build(false));
-
-            return sql;
-        }
-
-      
 
 
         public async Task<IEnumerable<T>> ExecuteQuery()
         {
-            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build(), SqlParameter, Aop);
-
-            return await command.ExecuteQuery();
+            return await _provider.ExecuteQuery<T>();
         }
 
         public async Task<T> ExecuteFirst()
         {
-            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build(), SqlParameter, Aop);
-
-            return await command.ExecuteFirst();
+            return await _provider.ExecuteFirst<T>();
         }
 
         public async Task<T> ExecuteFirstOrDefault()
         {
-            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build(), SqlParameter, Aop);
-
-            return await command.ExecuteFirstOrDefault();
+            return await _provider.ExecuteFirstOrDefault<T>();
         }
 
         public async Task<T> ExecuteSingle()
         {
-            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build(), SqlParameter, Aop);
-
-            return await command.ExecuteSingle();
+            return await _provider.ExecuteSingle<T>();
         }
 
         public async Task<T> ExecuteSingleOrDefault()
         {
-            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build(), SqlParameter, Aop);
-
-            return await command.ExecuteSingleOrDefault();
+            return await _provider.ExecuteSingleOrDefault<T>();
         }
 
         public async Task<(IEnumerable<T> data, int total)> ToPageList(int pageIndex, int pageSize)
         {
-            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build(), SqlParameter, Aop);
-
-            return await command.ToPageList(pageIndex, pageSize);
+         
+            return await _provider.ToPageList<T>(pageIndex, pageSize);
 
         }
 
@@ -189,55 +117,49 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
     public class ComplexQueryable<T1, T2> : ComplexQueryable<T1>, IComplexQueryable<T1, T2>
     {
-        //private readonly StringBuilder _join;
+        private readonly IQueryableProvider _provider;
 
-        //private readonly Dictionary<string, object> _sqlParameter;
-
-       // private IWhereCommand<T1, T2> _whereCommand;
-        //public ComplexQueryable(IDbConnection connection) : base(connection)
-        //{
-        //}
-
-        public ComplexQueryable(IDbConnection connection, string _alias, StringBuilder join, Dictionary<string, object> sqlParameter) : base(connection, _alias)
+        public ComplexQueryable(IQueryableProvider provider) : base(provider)
         {
-            _joinSql = join;
-            SqlParameter = sqlParameter;
-
-            //_whereCommand = new WhereCommand<T1, T2>(SqlParameter);
+            _provider = provider;
         }
+
+
 
         public IComplexQueryable<T1, T2, T3> Join<T3>(string alias, Expression<Func<T1, T2, T3, bool>> predicate)
         {
 
-            var joinCommand = new JoinCommand(alias, SqlParameter);
-            joinCommand.Join(predicate);
+            _provider.Join(alias, predicate);
 
-            _joinSql.Append(joinCommand.Build<T3>());
-            
-            return new ComplexQueryable<T1, T2, T3>(Connection, _alias, _joinSql, SqlParameter);
+
+            return new ComplexQueryable<T1, T2, T3>(_provider);
         }
 
         public IComplexQueryable<T1, T2> Where(Expression<Func<T1, T2, bool>> predicate)
         {
-            whereCommand.Where(predicate);
+            _provider.Where(predicate);
 
             return this;
         }
 
-
-        
-
         public IComplexQueryable<T1, T2> OrderBy<TResult>(Expression<Func<T1, T2, TResult>> predicate)
         {
-            throw new NotImplementedException();
+            _provider.OrderBy(predicate);
+
+            return this;
         }
 
         public IComplexQueryable<T1, T2> OrderByDesc<TResult>(Expression<Func<T1, T2, TResult>> predicate)
         {
-            throw new NotImplementedException();
+           _provider.OrderByDesc(predicate);
+
+           return this;
         }
 
-       
+        public IReaderableCommand<TResult> Select<TResult>(Expression<Func<T1, T2, TResult>> predicate)
+        {
+            return _provider.Select(predicate);
+        }
     }
 
 
@@ -245,33 +167,38 @@ namespace DoCare.Extension.DataBase.Imp.Operate
     {
         //private readonly StringBuilder _join;
 
-        private readonly Dictionary<string, object> _sqlParameter;
+        private readonly IQueryableProvider _provider;
 
-      
-
-        public ComplexQueryable(IDbConnection connection, string _alias, StringBuilder join, Dictionary<string, object> sqlParameter) : base(connection, _alias, join, sqlParameter)
+        public ComplexQueryable(IQueryableProvider provider) : base(provider)
         {
-           // _joinSql = join;
-           // _sqlParameter = sqlParameter;
+            _provider = provider;
         }
+
 
         public IComplexQueryable<T1, T2, T3> Where(Expression<Func<T1, T2, T3, bool>> predicate)
         {
-            whereCommand.Where(predicate);
+            _provider.Where(predicate);
 
             return this;
         }
 
         public IComplexQueryable<T1, T2, T3> OrderBy<TResult>(Expression<Func<T1, T2, T3, TResult>> predicate)
         {
-            throw new NotImplementedException();
+            _provider.OrderBy(predicate);
+
+            return this;
         }
 
         public IComplexQueryable<T1, T2, T3> OrderByDesc<TResult>(Expression<Func<T1, T2, T3, TResult>> predicate)
         {
-            throw new NotImplementedException();
+            _provider.OrderByDesc(predicate);
+
+            return this;
         }
 
-       
+        public IReaderableCommand<TResult> Select<TResult>(Expression<Func<T1, T2, T3, TResult>> predicate)
+        {
+            return _provider.Select(predicate);
+        }
     }
 }

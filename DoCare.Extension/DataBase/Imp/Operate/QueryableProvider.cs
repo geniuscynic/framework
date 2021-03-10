@@ -14,14 +14,14 @@ using DoCare.Extension.DataBase.Utility;
 
 namespace DoCare.Extension.DataBase.Imp.Operate
 {
-    internal class QueryableProvider :  Provider, IQueryableProvider
+    public class QueryableProvider :  Provider, IQueryableProvider
     {
         protected readonly string _alias;
         private readonly WhereCommand _whereCommand;
         private readonly IOrderByCommand _orderByCommand;
 
         private readonly StringBuilder _selectField = new StringBuilder();
-        protected StringBuilder _joinSql = new StringBuilder();
+        private StringBuilder _joinSql = new StringBuilder();
 
         public QueryableProvider(IDbConnection connection, string alias) : base(connection)
         {
@@ -109,7 +109,7 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
             provider.SelectFields.ForEach(t =>
             {
-                _selectField.Append($"{_alias}.{t.ColumnName} as {t.Parameter},");
+                _selectField.Append($"{t.Prefix}.{t.ColumnName} as {t.Parameter},");
 
                 //prefix = t.Prefix;
             });

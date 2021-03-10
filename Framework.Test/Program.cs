@@ -53,9 +53,17 @@ namespace Framework.test
             dbclient.ComplexQueryable<Blog>("t1")
                 .Join<User>("t2",(t1, t2) => t1.content == t2.title)
                 .Join<User>("t3", (t1, t2, t3)=> t1.content == t3.content)
-                .Where((t1, t2)=> t1.content == t2.content)
-                //.Where(t1 => t1.title == "a")
-                .ExecuteQuery();
+                .Where((t1, t2, _)=> t1.content == t2.content)
+                .Select((t1, t2, t3) =>
+                    new 
+                    {
+                        a = t1.content,
+                        b = t2.author,
+                        c = t3.title
+
+                    }
+                )
+                .ToPageList(1,10);
 
 
             //dbclient.Queryable<Blog>().Where(t =>  t.title == a)

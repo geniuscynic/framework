@@ -73,6 +73,8 @@ namespace DoCare.Extension.DataBase.Interface.Operate
 
         IComplexQueryable<T1, T2> OrderByDesc<TResult>(Expression<Func<T1, T2, TResult>> predicate);
 
+        IReaderableCommand<TResult> Select<TResult>(Expression<Func<T1, T2, TResult>> predicate);
+
     }
 
     public interface IComplexQueryable<T1, T2, T3> : IComplexQueryable<T1, T2>
@@ -87,6 +89,8 @@ namespace DoCare.Extension.DataBase.Interface.Operate
         IComplexQueryable<T1, T2, T3> OrderBy<TResult>(Expression<Func<T1, T2, T3, TResult>> predicate);
 
         IComplexQueryable<T1, T2, T3> OrderByDesc<TResult>(Expression<Func<T1, T2, T3, TResult>> predicate);
+
+        IReaderableCommand<TResult> Select<TResult>(Expression<Func<T1, T2, T3, TResult>> predicate);
 
     }
 }
