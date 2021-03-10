@@ -32,6 +32,8 @@ namespace DoCare.Extension.Swagger
 
                 });
 
+                c.CustomSchemaIds(t=>t.FullName);
+
                 c.OrderActionsBy(o => o.RelativePath);
 
                 //var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";

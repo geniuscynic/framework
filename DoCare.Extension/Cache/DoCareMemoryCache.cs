@@ -1,5 +1,4 @@
 ﻿using System;
-using DoCare.ToolKit;
 
 namespace DoCare.Extension.Cache
 {
@@ -8,22 +7,23 @@ namespace DoCare.Extension.Cache
 
         public void Set<T>(string key, T model)
         {
-            CacheKit.Set(key, model);
+           // CacheKit.Set(key, model);
         }
 
         public void Set<T>(string key, T model, TimeSpan expried)
         {
-            CacheKit.Set(key, model, expried);
+            //CacheKit.Set(key, model, expried);
         }
 
         public T Get<T>(string key)
         {
-           return CacheKit.Get<T>(key);
+           //return CacheKit.Get<T>(key);
+           throw new Exception();
         }
 
         public void Remove(string key)
         {
-            CacheKit.Remove(key);
+           // CacheKit.Remove(key);
         }
     }
 }

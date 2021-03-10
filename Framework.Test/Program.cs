@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices.ComTypes;
 using DoCare.Extension.DataBase;
 using DoCare.Extension.DataBase.Utility;
 
@@ -42,12 +43,19 @@ namespace Framework.test
            // var result = generateModel.GetTableDefine().Result;
             var dbclient = new Dbclient("Server=localhost;Database=blog;Trusted_Connection=True;MultipleActiveResultSets=true", "MsSql");
 
-            dbclient.ComplexQueryable<Blog>().Where(t => t.title == a)
-                .Where(t=>t.content == "dddd")
-                .OrderBy(t => t.title)
-                .OrderBy(t => new { t.author, t.content })
-                .OrderByDesc(t => t.content)
-                .ExecuteFirst();
+            //dbclient.ComplexQueryable<Blog>().Where(t => t.title == a)
+            //    .Where(t=>t.content == "dddd")
+            //    .OrderBy(t => t.title)
+            //    .OrderBy(t => new { t.author, t.content })
+            //    .OrderByDesc(t => t.content)
+            //    .ExecuteFirst();
+
+            dbclient.ComplexQueryable<Blog>("t1")
+                .Join<User>("t2",(t1, t2) => t1.content == t2.title)
+                .Join<User>("t3", (t1, t2, t3)=> t1.content == t3.content)
+                .Where((t1, t2)=> t1.content == t2.content)
+                //.Where(t1 => t1.title == "a")
+                .ExecuteQuery();
 
 
             //dbclient.Queryable<Blog>().Where(t =>  t.title == a)

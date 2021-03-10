@@ -14,23 +14,40 @@ using DoCare.Extension.DataBase.Utility;
 
 namespace DoCare.Extension.DataBase.Imp.Operate
 {
+     
+
     public class ComplexQueryable<T> :  Provider, IComplexQueryable<T>
     {
-        private readonly WhereCommand<T> whereCommand;
+        protected readonly string _alias;
+        protected readonly WhereCommand whereCommand;
         private readonly IOrderByCommand<T> orderByCommand;
 
         private readonly StringBuilder _selectField = new StringBuilder();
+        protected StringBuilder _joinSql = new StringBuilder();
+        //private readonly StringBuilder _selectField = new StringBuilder();
 
 
-        private string prefix = "";
+      
 
         //private readonly  StringBuilder _sortSql = new StringBuilder();
 
-        public ComplexQueryable(IDbConnection connection) : base(connection)
+        public ComplexQueryable(IDbConnection connection, string alias) : base(connection)
         {
-            whereCommand = new WhereCommand<T>(SqlParameter);
+            _alias = alias;
+            whereCommand = new WhereCommand(SqlParameter);
 
             orderByCommand = new OrderByCommand<T>();
+        }
+
+       
+        public IComplexQueryable<T, T2> Join<T2>(string alias, Expression<Func<T, T2, bool>> predicate)
+        {
+            var joinCommand = new JoinCommand(alias, SqlParameter);
+            joinCommand.Join(predicate);
+
+            _joinSql.Append(joinCommand.Build<T2>());
+            
+            return new ComplexQueryable<T, T2>(Connection, _alias, _joinSql, SqlParameter);
         }
 
         public IComplexQueryable<T> Where(Expression<Func<T, bool>> predicate)
@@ -80,7 +97,7 @@ namespace DoCare.Extension.DataBase.Imp.Operate
             {
                 _selectField.Append($"{t.Prefix}.{t.ColumnName} as {t.Parameter},");
 
-                prefix = t.Prefix;
+                //prefix = t.Prefix;
             });
             _selectField.Remove(_selectField.Length - 1, 1);
             return DatabaseFactory.CreateReaderableCommand<TResult>(Connection, Build(), SqlParameter, Aop);
@@ -89,7 +106,7 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
         private StringBuilder Build()
         {
-            prefix = whereCommand.prefix;
+            //prefix = whereCommand.prefix;
 
             var sql = new StringBuilder();
 
@@ -105,14 +122,14 @@ namespace DoCare.Extension.DataBase.Imp.Operate
             {
                 foreach (var property in properties)
                 {
-                    selectSql.Append($"{prefix}.{property.ColumnName} as {property.Parameter},");
+                    selectSql.Append($"{_alias}.{property.ColumnName} as {property.Parameter},");
                 }
 
                 selectSql.Remove(selectSql.Length - 1, 1);
             }
 
 
-            sql.Append($"select {selectSql} from {tableName} {prefix}");
+            sql.Append($"select {selectSql} from {tableName} {_alias} {_joinSql}");
 
 
             sql.Append(whereCommand.Build(false).Replace(DatabaseFactory.ParamterSplit, DbPrefix));
@@ -121,6 +138,8 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
             return sql;
         }
+
+      
 
 
         public async Task<IEnumerable<T>> ExecuteQuery()
@@ -170,19 +189,43 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
     public class ComplexQueryable<T1, T2> : ComplexQueryable<T1>, IComplexQueryable<T1, T2>
     {
-        public ComplexQueryable(IDbConnection connection) : base(connection)
+        //private readonly StringBuilder _join;
+
+        //private readonly Dictionary<string, object> _sqlParameter;
+
+       // private IWhereCommand<T1, T2> _whereCommand;
+        //public ComplexQueryable(IDbConnection connection) : base(connection)
+        //{
+        //}
+
+        public ComplexQueryable(IDbConnection connection, string _alias, StringBuilder join, Dictionary<string, object> sqlParameter) : base(connection, _alias)
         {
+            _joinSql = join;
+            SqlParameter = sqlParameter;
+
+            //_whereCommand = new WhereCommand<T1, T2>(SqlParameter);
         }
 
-        public ComplexQueryable(IDbConnection connection, Expression<Func<T1,T2, bool>> join) : base(connection)
+        public IComplexQueryable<T1, T2, T3> Join<T3>(string alias, Expression<Func<T1, T2, T3, bool>> predicate)
         {
 
+            var joinCommand = new JoinCommand(alias, SqlParameter);
+            joinCommand.Join(predicate);
+
+            _joinSql.Append(joinCommand.Build<T3>());
+            
+            return new ComplexQueryable<T1, T2, T3>(Connection, _alias, _joinSql, SqlParameter);
         }
 
         public IComplexQueryable<T1, T2> Where(Expression<Func<T1, T2, bool>> predicate)
         {
-            throw new NotImplementedException();
+            whereCommand.Where(predicate);
+
+            return this;
         }
+
+
+        
 
         public IComplexQueryable<T1, T2> OrderBy<TResult>(Expression<Func<T1, T2, TResult>> predicate)
         {
@@ -193,5 +236,42 @@ namespace DoCare.Extension.DataBase.Imp.Operate
         {
             throw new NotImplementedException();
         }
+
+       
+    }
+
+
+    public class ComplexQueryable<T1, T2, T3> : ComplexQueryable<T1, T2>, IComplexQueryable<T1, T2, T3>
+    {
+        //private readonly StringBuilder _join;
+
+        private readonly Dictionary<string, object> _sqlParameter;
+
+      
+
+        public ComplexQueryable(IDbConnection connection, string _alias, StringBuilder join, Dictionary<string, object> sqlParameter) : base(connection, _alias, join, sqlParameter)
+        {
+           // _joinSql = join;
+           // _sqlParameter = sqlParameter;
+        }
+
+        public IComplexQueryable<T1, T2, T3> Where(Expression<Func<T1, T2, T3, bool>> predicate)
+        {
+            whereCommand.Where(predicate);
+
+            return this;
+        }
+
+        public IComplexQueryable<T1, T2, T3> OrderBy<TResult>(Expression<Func<T1, T2, T3, TResult>> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IComplexQueryable<T1, T2, T3> OrderByDesc<TResult>(Expression<Func<T1, T2, T3, TResult>> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
+       
     }
 }

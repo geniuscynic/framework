@@ -23,11 +23,11 @@ namespace DoCare.Extension.DataBase.Utility
 
     public class JoinInfo
     {
-        public JoinInfo(JoinType joinType, Expression<Func<>>)
+        //public JoinInfo(JoinType joinType, Expression<Func<>>)
     }
     public class JoinInfos
     {
-        public JoinInfos(JoinType joinType, )
+       // public JoinInfos(JoinType joinType, )
     }
 
 

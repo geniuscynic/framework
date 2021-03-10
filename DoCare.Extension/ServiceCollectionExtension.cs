@@ -3,13 +3,13 @@ using System.IO;
 using System.Reflection;
 using Autofac;
 using DoCare.Extension.AutoFac;
+using DoCare.Extension.Cache;
 using DoCare.Extension.Configuration;
 using DoCare.Extension.Filter;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using DoCareMemoryCache = DoCare.Extension.Cache.DoCareMemoryCache;
-using ICache = DoCare.Extension.Cache.ICache;
+
 
 namespace DoCare.Extension
 {
@@ -18,7 +18,7 @@ namespace DoCare.Extension
 
         public static IServiceCollection AddCommonSetup(this IServiceCollection services, IConfiguration configuration)
         {
-            //services.AddSingleton(new ConfigurationManager(configuration));
+            services.AddSingleton(new ConfigurationManager(configuration));
             //services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddControllers(configure =>
@@ -26,7 +26,7 @@ namespace DoCare.Extension
                 // 全局异常过滤
                 configure.Filters.Add(typeof(GlobalExceptionsFilter));
 
-            }).AddControllersAsServices();
+            }).AddControllersAsServices().AddNewtonsoftJson();
 
 
             return services;

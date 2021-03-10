@@ -11,30 +11,30 @@ namespace DoCare.Extension.DataBase
     public class Dbclient : IDisposable
     {
 
-        public ILog logger { get; set; }
+        //public ILog logger { get; set; }
 
         private readonly IDbConnection _connection;
 
-        protected Aop Aop { get; set; }
+        public Aop Aop { get; set; }
         public Dbclient(string connectionString, string provider)
         {
             _connection = DatabaseFactory.CreateConnection(connectionString, provider);
 
-            Aop = new Aop()
-            {
-                OnError = (sql, paramter) =>
-                {
+            //Aop = new Aop()
+            //{
+            //    OnError = (sql, paramter) =>
+            //    {
                     
-                    logger?.Error($"Sql:  {sql}, \r\n paramter: {JsonConvert.SerializeObject(paramter)}");
-                    //Console.WriteLine(sql);
-                },
-                OnExecuting = (sql, paramter) =>
-                {
-                    //Console.WriteLine(sql);
-                    logger?.InfoFormat("Sql: \r\n{0}", sql);
-                },
+            //        logger?.Error($"Sql:  {sql}, \r\n paramter: {JsonConvert.SerializeObject(paramter)}");
+            //        //Console.WriteLine(sql);
+            //    },
+            //    OnExecuting = (sql, paramter) =>
+            //    {
+            //        //Console.WriteLine(sql);
+            //        logger?.InfoFormat("Sql: \r\n{0}", sql);
+            //    },
 
-            };
+            //};
         }
 
         public IInsertable<T> Insertable<T>(T model)
@@ -68,9 +68,9 @@ namespace DoCare.Extension.DataBase
             return DatabaseFactory.CreateQueryable<T>(_connection, Aop);
         }
 
-        public IComplexQueryable<T> ComplexQueryable<T>()
+        public IComplexQueryable<T> ComplexQueryable<T>(string alias)
         {
-            return DatabaseFactory.CreateComplexQueryable<T>(_connection, Aop);
+            return DatabaseFactory.CreateComplexQueryable<T>(_connection, Aop, alias);
         }
 
 
