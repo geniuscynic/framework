@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using DoCare.Extension.DataBase.Imp.Operate;
 using DoCare.Extension.DataBase.Interface.Operate;
 using DoCare.Extension.DataBase.Utility;
 using log4net;
@@ -77,6 +78,19 @@ namespace DoCare.Extension.DataBase
         public IDeleteable<T> Deleteable<T>()
         {
             return DatabaseFactory.CreateDeleteable<T>(_connection, Aop);
+        }
+
+        public SimpleQueryable<T> SimpleQueryable<T>(string sql)
+        {
+            return SimpleQueryable<T>(sql, new Dictionary<string, object>());
+        }
+
+        public SimpleQueryable<T> SimpleQueryable<T>(string sql, Dictionary<string, object> sqlParameter)
+        {
+            return new SimpleQueryable<T>(_connection, sql, sqlParameter)
+            {
+                Aop = Aop
+            };
         }
 
         public IDbConnection GetConnection()
