@@ -57,6 +57,12 @@ namespace DoCare.Extension.DataBase.Imp.Command
             VisitOrderBy(predicate);
         }
 
+
+        public void OrderBy<T1, T2, T3, T4, TResult>(Expression<Func<T1, T2, T3, T4, TResult>> predicate)
+        {
+            VisitOrderBy(predicate);
+        }
+
         public void OrderByDesc<T, TResult>(Expression<Func<T, TResult>> predicate)
         {
             VisitOrderByDesc(predicate);
@@ -68,6 +74,11 @@ namespace DoCare.Extension.DataBase.Imp.Command
         }
 
         public void OrderByDesc<T1, T2, T3, TResult>(Expression<Func<T1, T2, T3, TResult>> predicate)
+        {
+            VisitOrderByDesc(predicate);
+        }
+
+        public void OrderByDesc<T1, T2, T3, T4, TResult>(Expression<Func<T1, T2, T3, T4, TResult>> predicate)
         {
             VisitOrderByDesc(predicate);
         }
@@ -89,6 +100,7 @@ namespace DoCare.Extension.DataBase.Imp.Command
 
             return sql;
         }
+
     }
 
 

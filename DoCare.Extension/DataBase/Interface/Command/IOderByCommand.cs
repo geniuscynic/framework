@@ -12,12 +12,15 @@ namespace DoCare.Extension.DataBase.Interface.Command
 
         void OrderBy<T1, T2, T3, TResult>(Expression<Func<T1, T2, T3, TResult>> predicate);
 
+        void OrderBy<T1, T2, T3, T4, TResult>(Expression<Func<T1, T2, T3, T4, TResult>> predicate);
+
         void OrderByDesc<T, TResult>(Expression<Func<T, TResult>> predicate);
 
         void OrderByDesc<T1, T2, TResult>(Expression<Func<T1, T2, TResult>> predicate);
 
         void OrderByDesc<T1, T2, T3, TResult>(Expression<Func<T1, T2, T3, TResult>> predicate);
 
+        void OrderByDesc<T1, T2, T3, T4, TResult>(Expression<Func<T1, T2, T3, T4, TResult>> predicate);
 
         StringBuilder Build(bool ignorePrefix = true);
     }

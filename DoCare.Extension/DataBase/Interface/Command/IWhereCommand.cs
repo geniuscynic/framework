@@ -12,6 +12,8 @@ namespace DoCare.Extension.DataBase.Interface.Command
 
         void Where<T1, T2, T3>(Expression<Func<T1, T2, T3, bool>> predicate);
 
+        void Where<T1, T2, T3, T4>(Expression<Func<T1, T2, T3, T4, bool>> predicate);
+
         void Where(string whereExpression);
 
         void Where<TResult>(string whereExpression, Expression<Func<TResult>> predicate);

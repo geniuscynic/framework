@@ -47,6 +47,38 @@ namespace DoCare.Extension.DataBase.Imp.Operate
             _joinSql.Append(joinCommand.Build<T3>());
         }
 
+        public void Join<T1, T2, T3, T4>(string alias, Expression<Func<T1, T2, T3, T4, bool>> predicate)
+        {
+            var joinCommand = new JoinCommand(alias, SqlParameter);
+            joinCommand.Join(predicate);
+
+            _joinSql.Append(joinCommand.Build<T4>());
+        }
+
+        public void LeftJoin<T1, T2>(string alias, Expression<Func<T1, T2, bool>> predicate)
+        {
+            var joinCommand = new JoinCommand(alias, SqlParameter);
+            joinCommand.Join(predicate);
+
+            _joinSql.Append(joinCommand.Build<T2>());
+        }
+
+        public void LeftJoin<T1, T2, T3>(string alias, Expression<Func<T1, T2, T3, bool>> predicate)
+        {
+            var joinCommand = new JoinCommand(alias, SqlParameter);
+            joinCommand.Join(predicate);
+
+            _joinSql.Append(joinCommand.Build<T3>());
+        }
+
+        public void LeftJoin<T1, T2, T3, T4>(string alias, Expression<Func<T1, T2, T3, T4, bool>> predicate)
+        {
+            var joinCommand = new JoinCommand(alias, SqlParameter);
+            joinCommand.Join(predicate);
+
+            _joinSql.Append(joinCommand.Build<T4>());
+        }
+
         public void Where<T>(Expression<Func<T, bool>> predicate)
         {
             _whereCommand.Where(predicate);
@@ -58,6 +90,11 @@ namespace DoCare.Extension.DataBase.Imp.Operate
         }
 
         public void Where<T1, T2, T3>(Expression<Func<T1, T2, T3, bool>> predicate)
+        {
+            _whereCommand.Where(predicate);
+        }
+
+        public void Where<T1, T2, T3, T4>(Expression<Func<T1, T2, T3, T4, bool>> predicate)
         {
             _whereCommand.Where(predicate);
         }
@@ -87,6 +124,11 @@ namespace DoCare.Extension.DataBase.Imp.Operate
             _orderByCommand.OrderBy(predicate);
         }
 
+        public void OrderBy<T1, T2, T3, T4, TResult>(Expression<Func<T1, T2, T3, T4, TResult>> predicate)
+        {
+            _orderByCommand.OrderBy(predicate);
+        }
+
         public void OrderByDesc<T, TResult>(Expression<Func<T, TResult>> predicate)
         {
             _orderByCommand.OrderByDesc(predicate);
@@ -98,6 +140,11 @@ namespace DoCare.Extension.DataBase.Imp.Operate
         }
 
         public void OrderByDesc<T1, T2, T3, TResult>(Expression<Func<T1, T2, T3, TResult>> predicate)
+        {
+            _orderByCommand.OrderByDesc(predicate);
+        }
+
+        public void OrderByDesc<T1, T2, T3, T4, TResult>(Expression<Func<T1, T2, T3, T4, TResult>> predicate)
         {
             _orderByCommand.OrderByDesc(predicate);
         }
@@ -129,6 +176,11 @@ namespace DoCare.Extension.DataBase.Imp.Operate
         }
 
         public IReaderableCommand<TResult> Select<T1, T2, T3, TResult>(Expression<Func<T1, T2, T3, TResult>> predicate)
+        {
+            return VisitSelect<T1, TResult>(predicate);
+        }
+
+        public IReaderableCommand<TResult> Select<T1, T2, T3, T4, TResult>(Expression<Func<T1, T2, T3, T4, TResult>> predicate)
         {
             return VisitSelect<T1, TResult>(predicate);
         }

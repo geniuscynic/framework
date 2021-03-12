@@ -45,6 +45,11 @@ namespace DoCare.Extension.DataBase.Imp.Command
             VisitPredicate(predicate);
         }
 
+        public void Where<T1, T2, T3, T4>(Expression<Func<T1, T2, T3, T4, bool>> predicate)
+        {
+            VisitPredicate(predicate);
+        }
+
 
         public void Where(string whereExpression)
         {

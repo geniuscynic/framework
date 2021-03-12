@@ -14,7 +14,7 @@ using DoCare.Extension.DataBase.Utility;
 
 namespace DoCare.Extension.DataBase.Imp.Operate
 {
-    public class ComplexQueryable<T> :   IComplexQueryable<T>
+    public class ComplexQueryable<T> : IComplexQueryable<T>
     {
         private readonly IQueryableProvider _provider;
 
@@ -27,10 +27,17 @@ namespace DoCare.Extension.DataBase.Imp.Operate
             _provider = provider;
         }
 
-       
+
         public IComplexQueryable<T, T2> Join<T2>(string alias, Expression<Func<T, T2, bool>> predicate)
         {
-            _provider.Join(alias,predicate);
+            _provider.Join(alias, predicate);
+
+            return new ComplexQueryable<T, T2>(_provider);
+        }
+
+        public IComplexQueryable<T, T2> LeftJoin<T2>(string alias, Expression<Func<T, T2, bool>> predicate)
+        {
+            _provider.Join(alias, predicate);
 
             return new ComplexQueryable<T, T2>(_provider);
         }
@@ -108,7 +115,7 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
         public async Task<(IEnumerable<T> data, int total)> ToPageList(int pageIndex, int pageSize)
         {
-         
+
             return await _provider.ToPageList<T>(pageIndex, pageSize);
 
         }
@@ -135,6 +142,15 @@ namespace DoCare.Extension.DataBase.Imp.Operate
             return new ComplexQueryable<T1, T2, T3>(_provider);
         }
 
+        public IComplexQueryable<T1, T2, T3> LeftJoin<T3>(string alias, Expression<Func<T1, T2, T3, bool>> predicate)
+        {
+
+            _provider.Join(alias, predicate);
+
+
+            return new ComplexQueryable<T1, T2, T3>(_provider);
+        }
+
         public IComplexQueryable<T1, T2> Where(Expression<Func<T1, T2, bool>> predicate)
         {
             _provider.Where(predicate);
@@ -151,9 +167,9 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
         public IComplexQueryable<T1, T2> OrderByDesc<TResult>(Expression<Func<T1, T2, TResult>> predicate)
         {
-           _provider.OrderByDesc(predicate);
+            _provider.OrderByDesc(predicate);
 
-           return this;
+            return this;
         }
 
         public IReaderableCommand<TResult> Select<TResult>(Expression<Func<T1, T2, TResult>> predicate)
@@ -174,6 +190,26 @@ namespace DoCare.Extension.DataBase.Imp.Operate
             _provider = provider;
         }
 
+
+        public IComplexQueryable<T1, T2, T3, T4> Join<T4>(string alias,
+            Expression<Func<T1, T2, T3, T4, bool>> predicate)
+        {
+
+            _provider.Join(alias, predicate);
+
+
+            return new ComplexQueryable<T1, T2, T3, T4>(_provider);
+        }
+
+        public IComplexQueryable<T1, T2, T3, T4> LeftJoin<T4>(string alias,
+            Expression<Func<T1, T2, T3, T4, bool>> predicate)
+        {
+
+            _provider.Join(alias, predicate);
+
+
+            return new ComplexQueryable<T1, T2, T3, T4>(_provider);
+        }
 
         public IComplexQueryable<T1, T2, T3> Where(Expression<Func<T1, T2, T3, bool>> predicate)
         {
@@ -197,6 +233,44 @@ namespace DoCare.Extension.DataBase.Imp.Operate
         }
 
         public IReaderableCommand<TResult> Select<TResult>(Expression<Func<T1, T2, T3, TResult>> predicate)
+        {
+            return _provider.Select(predicate);
+        }
+    }
+
+    public class ComplexQueryable<T1, T2, T3, T4> : ComplexQueryable<T1, T2, T3>, IComplexQueryable<T1, T2, T3, T4>
+    {
+        //private readonly StringBuilder _join;
+
+        private readonly IQueryableProvider _provider;
+
+        public ComplexQueryable(IQueryableProvider provider) : base(provider)
+        {
+            _provider = provider;
+        }
+
+        public IComplexQueryable<T1, T2, T3, T4> Where(Expression<Func<T1, T2, T3, T4, bool>> predicate)
+        {
+            _provider.Where(predicate);
+
+            return this;
+        }
+
+        public IComplexQueryable<T1, T2, T3, T4> OrderBy<TResult>(Expression<Func<T1, T2, T3, T4, TResult>> predicate)
+        {
+            _provider.OrderBy(predicate);
+
+            return this;
+        }
+
+        public IComplexQueryable<T1, T2, T3, T4> OrderByDesc<TResult>(Expression<Func<T1, T2, T3, T4, TResult>> predicate)
+        {
+            _provider.OrderByDesc(predicate);
+
+            return this;
+        }
+
+        public IReaderableCommand<TResult> Select<TResult>(Expression<Func<T1, T2, T3, T4, TResult>> predicate)
         {
             return _provider.Select(predicate);
         }

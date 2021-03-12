@@ -13,8 +13,8 @@ namespace DoCare.Extension.DataBase.Imp.Command
     {
         private readonly string _alias;
         private readonly Dictionary<string, object> _sqlPamater;
-        private readonly WhereProvider _whereProvider = new WhereProvider();
-
+        private readonly WhereProvider _joinProvider = new WhereProvider();
+        
         public JoinCommand(string alias, Dictionary<string, object> sqlPamater)
         {
             _alias = alias;
@@ -24,12 +24,70 @@ namespace DoCare.Extension.DataBase.Imp.Command
 
         public void Join<T1, T2>(Expression<Func<T1, T2, bool>> predicate)
         {
-            _whereProvider.Visit(predicate);
+            _joinProvider.Visit(predicate);
         }
 
         public void Join<T1, T2, T3>(Expression<Func<T1, T2, T3, bool>> predicate)
         {
-            _whereProvider.Visit(predicate);
+            _joinProvider.Visit(predicate);
+        }
+
+        public void Join<T1, T2, T3, T4>(Expression<Func<T1, T2, T3, T4, bool>> predicate)
+        {
+            _joinProvider.Visit(predicate);
+        }
+
+        public void LeftJoin<T1, T2>(Expression<Func<T1, T2, bool>> predicate)
+        {
+            _joinProvider.Visit(predicate);
+        }
+
+        public void LeftJoin<T1, T2, T3>(Expression<Func<T1, T2, T3, bool>> predicate)
+        {
+            _joinProvider.Visit(predicate);
+        }
+
+        public void LeftJoin<T1, T2, T3, T4>(Expression<Func<T1, T2, T3, T4, bool>> predicate)
+        {
+            _joinProvider.Visit(predicate);
+        }
+
+        public StringBuilder JoinBuild<TJoin>()
+        {
+            var (tableName, _) = ProviderHelper.GetMetas(typeof(TJoin));
+
+            var sql = new StringBuilder();
+            sql.Append($" join {tableName} {_alias} on ");
+
+            sql.Append(_joinProvider.whereModel.Sql);
+            //sql.Remove(sql.Length - 3, 3);
+
+            foreach (var keyValuePair in _joinProvider.whereModel.Parameter)
+            {
+                _sqlPamater[keyValuePair.Key] = keyValuePair.Value;
+            }
+
+            return sql;
+        }
+
+        public StringBuilder LeftJoinBuild<TJoin>()
+        {
+            var (tableName, _) = ProviderHelper.GetMetas(typeof(TJoin));
+
+            var sql = new StringBuilder();
+
+
+            sql.Append($" join {tableName} {_alias} on ");
+
+            sql.Append(_joinProvider.whereModel.Sql);
+            //sql.Remove(sql.Length - 3, 3);
+
+            foreach (var keyValuePair in _joinProvider.whereModel.Parameter)
+            {
+                _sqlPamater[keyValuePair.Key] = keyValuePair.Value;
+            }
+
+            return sql;
         }
 
         public StringBuilder Build<TJoin>()
@@ -37,18 +95,30 @@ namespace DoCare.Extension.DataBase.Imp.Command
             var (tableName, _) = ProviderHelper.GetMetas(typeof(TJoin));
 
             var sql = new StringBuilder();
-            sql.Append($" join {tableName} {_alias} on ");
 
-            sql.Append(_whereProvider.whereModel.Sql);
+            if (_joinProvider.whereModel.Sql.Length > 0)
+            {
+                sql.Append($" join {tableName} {_alias} on ");
+
+            }
+            else
+            {
+                sql.Append($" left join {tableName} {_alias} on ");
+
+            }
+
+            sql.Append(_joinProvider.whereModel.Sql);
             //sql.Remove(sql.Length - 3, 3);
 
-            foreach (var keyValuePair in _whereProvider.whereModel.Parameter)
+            foreach (var keyValuePair in _joinProvider.whereModel.Parameter)
             {
                 _sqlPamater[keyValuePair.Key] = keyValuePair.Value;
             }
 
             return sql;
         }
+
+       
     }
 
 
