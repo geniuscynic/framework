@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using DoCare.Extension.DataBase.Imp;
+using Dapper;
 using DoCare.Extension.SqlHelper.Imp.Command;
 using DoCare.Extension.SqlHelper.Interface.Operate;
 using DoCare.Extension.SqlHelper.SqlProvider;
 using DoCare.Extension.SqlHelper.Utility;
+
 
 namespace DoCare.Extension.SqlHelper.Imp.Operate
 {
@@ -59,7 +61,7 @@ namespace DoCare.Extension.SqlHelper.Imp.Operate
 
             if (_selectProvider.SelectFields.Any())
             {
-                existProperty = properties.Where(p => _selectProvider.SelectFields.All(t => t.ColumnName != p.ColumnName));
+                existProperty = properties.Where(p =>  _selectProvider.SelectFields.All(t => t.ColumnName != p.ColumnName));
             }
             else
             {

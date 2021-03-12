@@ -6,7 +6,7 @@ using DoCare.Extension.SqlHelper.Utility;
 namespace DoCare.Extension.SqlHelper.SqlProvider
 {
 
-    public class WhereProvider : ExpressionVisitor
+    public class JoinProvider : ExpressionVisitor
     {
         //public List<WhereModel> Result = new List<WhereModel>();
 
@@ -104,8 +104,39 @@ namespace DoCare.Extension.SqlHelper.SqlProvider
             return base.VisitMember(node);
         }
 
+        protected override Expression VisitBlock(BlockExpression node)
+        {
+            return base.VisitBlock(node);
+        }
 
-     
+        protected override CatchBlock VisitCatchBlock(CatchBlock node)
+        {
+            return base.VisitCatchBlock(node);
+        }
 
+        protected override Expression VisitConditional(ConditionalExpression node)
+        {
+            return base.VisitConditional(node);
+        }
+
+        protected override ElementInit VisitElementInit(ElementInit node)
+        {
+            return base.VisitElementInit(node);
+        }
+
+        protected override MemberAssignment VisitMemberAssignment(MemberAssignment node)
+        {
+            return base.VisitMemberAssignment(node);
+        }
+
+        protected override MemberBinding VisitMemberBinding(MemberBinding node)
+        {
+            return base.VisitMemberBinding(node);
+        }
+
+        protected override Expression VisitMemberInit(MemberInitExpression node)
+        {
+            return base.VisitMemberInit(node);
+        }
     }
 }

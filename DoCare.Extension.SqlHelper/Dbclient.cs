@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using DoCare.Extension.SqlHelper.Imp.Operate;
 using DoCare.Extension.SqlHelper.Interface.Operate;
 using DoCare.Extension.SqlHelper.Utility;
+using Newtonsoft.Json;
 
-namespace DoCare.Extension.SqlHelper
+namespace DoCare.Extension.DataBase
 {
     public class Dbclient : IDisposable
     {
@@ -66,10 +68,28 @@ namespace DoCare.Extension.SqlHelper
             return DatabaseFactory.CreateQueryable<T>(_connection, Aop);
         }
 
+        public IComplexQueryable<T> ComplexQueryable<T>(string alias)
+        {
+            return DatabaseFactory.CreateComplexQueryable<T>(_connection, Aop, alias);
+        }
+
 
         public IDeleteable<T> Deleteable<T>()
         {
             return DatabaseFactory.CreateDeleteable<T>(_connection, Aop);
+        }
+
+        public SimpleQueryable<T> SimpleQueryable<T>(string sql)
+        {
+            return SimpleQueryable<T>(sql, new Dictionary<string, object>());
+        }
+
+        public SimpleQueryable<T> SimpleQueryable<T>(string sql, Dictionary<string, object> sqlParameter)
+        {
+            return new SimpleQueryable<T>(_connection, sql, sqlParameter)
+            {
+                Aop = Aop
+            };
         }
 
         public IDbConnection GetConnection()

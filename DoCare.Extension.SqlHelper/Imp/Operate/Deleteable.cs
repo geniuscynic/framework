@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using DoCare.Extension.DataBase.Imp;
+using Dapper;
 using DoCare.Extension.SqlHelper.Imp.Command;
 using DoCare.Extension.SqlHelper.Interface.Command;
 using DoCare.Extension.SqlHelper.Interface.Operate;
@@ -15,8 +15,6 @@ namespace DoCare.Extension.SqlHelper.Imp.Operate
     public class Deleteable<T> : Provider, IDeleteable<T>
     {
         private readonly  IWhereCommand<T> whereCommand;
-
-      
 
         public Deleteable(IDbConnection connection) : base(connection)
         {

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using DoCare.Extension.DataBase.Imp;
+using Dapper;
 using DoCare.Extension.SqlHelper.Imp.Command;
 using DoCare.Extension.SqlHelper.Interface.Command;
 using DoCare.Extension.SqlHelper.Interface.Operate;
@@ -15,8 +16,6 @@ namespace DoCare.Extension.SqlHelper.Imp.Operate
 {
     public class Queryable<T> : Provider, IDoCareQueryable<T>
     {
-       
-
         private readonly IWhereCommand<T> whereCommand;
         private readonly IOrderByCommand<T> orderByCommand;
 
@@ -26,8 +25,7 @@ namespace DoCare.Extension.SqlHelper.Imp.Operate
         private string prefix = "";
 
         //private readonly  StringBuilder _sortSql = new StringBuilder();
-       
-
+        
         public Queryable(IDbConnection connection)  : base(connection)
         {
             whereCommand = new WhereCommand<T>(SqlParameter);

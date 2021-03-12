@@ -2,7 +2,7 @@
 using System.Data;
 using DoCare.Extension.SqlHelper.Utility;
 
-namespace DoCare.Extension.DataBase.Imp
+namespace DoCare.Extension.SqlHelper.Imp
 {
     public class Provider
     {
@@ -10,15 +10,24 @@ namespace DoCare.Extension.DataBase.Imp
         
         protected string DbPrefix;
 
-        protected Dictionary<string, object> SqlParameter = new Dictionary<string, object>();
+        protected Dictionary<string, object> SqlParameter;
 
        
 
         public Aop Aop { get; set; }
 
-
-        public Provider(IDbConnection connection)
+        public Provider(IDbConnection connection):this(connection, new Dictionary<string, object>())
         {
+            Connection = connection;
+
+            DbPrefix = DatabaseFactory.GetStatementPrefix(connection);
+        }
+
+
+        public Provider(IDbConnection connection, Dictionary<string, object> SqlParameter)
+        {
+            this.SqlParameter = SqlParameter;
+
             Connection = connection;
             
             DbPrefix = DatabaseFactory.GetStatementPrefix(connection);

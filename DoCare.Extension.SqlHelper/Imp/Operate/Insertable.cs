@@ -1,11 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
-using DoCare.Extension.DataBase.Imp;
+using Dapper;
 using DoCare.Extension.SqlHelper.Imp.Command;
+using DoCare.Extension.SqlHelper.Interface;
+using DoCare.Extension.SqlHelper.Interface.Command;
 using DoCare.Extension.SqlHelper.Interface.Operate;
 using DoCare.Extension.SqlHelper.Utility;
+
 
 namespace DoCare.Extension.SqlHelper.Imp.Operate
 {
@@ -26,7 +30,7 @@ namespace DoCare.Extension.SqlHelper.Imp.Operate
 
             var type = typeof(T);
            
-            var (tableName, properties) = ProviderHelper.GetMetas(type);
+            var (tableName, properties) = Utility.ProviderHelper.GetMetas(type);
 
             foreach (var p in properties)
             {
