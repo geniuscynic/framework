@@ -4,22 +4,26 @@ using System.Linq.Expressions;
 using System.Text;
 using DoCare.Extension.DataBase.Interface.Command;
 using DoCare.Extension.DataBase.SqlProvider;
+using DoCare.Extension.DataBase.Utility;
 
 
 namespace DoCare.Extension.DataBase.Imp.Command
 {
     public class WhereCommand : IWhereCommand
     {
-        private readonly Dictionary<string, object> _sqlPamater;
-        protected readonly WhereProvider _whereProvider = new WhereProvider();
+        private readonly ProviderModel _providerModel;
+        //private readonly Dictionary<string, object> _sqlPamater;
+        protected readonly WhereProvider _whereProvider;
 
         private protected readonly StringBuilder _whereCause = new StringBuilder();
 
         public string prefix = "";
 
-        public WhereCommand(Dictionary<string, object> sqlPamater)
+        public WhereCommand(ProviderModel providerModel)
         {
-            _sqlPamater = sqlPamater;
+            _providerModel = providerModel;
+            _whereProvider = new WhereProvider(providerModel);
+            // _sqlPamater = sqlPamater;
         }
 
         private void VisitPredicate(Expression predicate)
@@ -73,7 +77,7 @@ namespace DoCare.Extension.DataBase.Imp.Command
             {
                 var values = types.GetProperty(t.Parameter)?.GetValue(model);
 
-                _sqlPamater[t.Parameter] = values;
+                _providerModel.Parameter[t.Parameter] = values;
             });
         }
 
@@ -87,113 +91,113 @@ namespace DoCare.Extension.DataBase.Imp.Command
             sql.Append(_whereProvider.whereModel.Sql);
             sql.Remove(sql.Length - 3, 3);
 
-            foreach (var keyValuePair in _whereProvider.whereModel.Parameter)
-            {
-                _sqlPamater[keyValuePair.Key] = keyValuePair.Value;
-            }
+            //foreach (var keyValuePair in _whereProvider.whereModel.Parameter)
+            //{
+            //    _sqlPamater[keyValuePair.Key] = keyValuePair.Value;
+            //}
 
             return ignorePrefix ? sql.Replace($"{prefix}.", "") : sql;
         }
     }
 
-    internal class WhereCommand<T> : IWhereCommand<T>
-    {
-        private readonly Dictionary<string, object> _sqlPamater;
-        protected readonly WhereProvider _whereProvider = new WhereProvider();
+    //internal class WhereCommand<T> : IWhereCommand<T>
+    //{
+    //    private readonly Dictionary<string, object> _sqlPamater;
+    //    protected readonly WhereProvider _whereProvider;// = new WhereProvider();
 
-        private readonly StringBuilder _whereCause = new StringBuilder();
+    //    private readonly StringBuilder _whereCause = new StringBuilder();
 
-        public string prefix = "";
+    //    public string prefix = "";
 
-        public WhereCommand(Dictionary<string, object> sqlPamater)
-        {
-            _sqlPamater = sqlPamater;
-        }
+    //    public WhereCommand(Dictionary<string, object> sqlPamater)
+    //    {
+    //        _sqlPamater = sqlPamater;
+    //    }
 
-        public void Where(Expression<Func<T, bool>> predicate)
-        {
-            _whereProvider.Visit(predicate);
+    //    public void Where(Expression<Func<T, bool>> predicate)
+    //    {
+    //        _whereProvider.Visit(predicate);
 
-            _whereProvider.whereModel.Sql.Append(" and");
+    //        _whereProvider.whereModel.Sql.Append(" and");
 
-            prefix = _whereProvider.whereModel.Prefix;
-        }
+    //        prefix = _whereProvider.whereModel.Prefix;
+    //    }
 
-        public void Where(string whereExpression)
-        {
-            _whereCause.Append($" ({whereExpression}) and");
-        }
+    //    public void Where(string whereExpression)
+    //    {
+    //        _whereCause.Append($" ({whereExpression}) and");
+    //    }
 
-        public void Where<TResult>(string whereExpression, Expression<Func<TResult>> predicate)
-        {
-            _whereCause.Append($" ({whereExpression}) and");
+    //    public void Where<TResult>(string whereExpression, Expression<Func<TResult>> predicate)
+    //    {
+    //        _whereCause.Append($" ({whereExpression}) and");
 
-            var provider = new SelectProvider();
-            provider.Visit(predicate);
+    //        var provider = new SelectProvider();
+    //        provider.Visit(predicate);
 
-            //var dic = (IDictionary<string, object>)_dynamicModel;
+    //        //var dic = (IDictionary<string, object>)_dynamicModel;
 
-            var model = predicate.Compile().Invoke();
-            var types = model.GetType();
+    //        var model = predicate.Compile().Invoke();
+    //        var types = model.GetType();
 
 
-            provider.SelectFields.ForEach(t =>
-            {
-                var values = types.GetProperty(t.Parameter)?.GetValue(model);
+    //        provider.SelectFields.ForEach(t =>
+    //        {
+    //            var values = types.GetProperty(t.Parameter)?.GetValue(model);
 
-                _sqlPamater[t.Parameter] = values;
-            });
-        }
+    //            _sqlPamater[t.Parameter] = values;
+    //        });
+    //    }
 
-        public StringBuilder Build(bool ignorePrefix = true)
-        {
-            var sql = new StringBuilder();
-            sql.Append(" where ");
+    //    public StringBuilder Build(bool ignorePrefix = true)
+    //    {
+    //        var sql = new StringBuilder();
+    //        sql.Append(" where ");
 
-            sql.Append(_whereCause);
+    //        sql.Append(_whereCause);
 
-            sql.Append(_whereProvider.whereModel.Sql);
-            sql.Remove(sql.Length - 3, 3);
+    //        sql.Append(_whereProvider.whereModel.Sql);
+    //        sql.Remove(sql.Length - 3, 3);
 
-            foreach (var keyValuePair in _whereProvider.whereModel.Parameter)
-            {
-                _sqlPamater[keyValuePair.Key] = keyValuePair.Value;
-            }
+    //        foreach (var keyValuePair in _whereProvider.whereModel.Parameter)
+    //        {
+    //            _sqlPamater[keyValuePair.Key] = keyValuePair.Value;
+    //        }
 
-            return ignorePrefix ? sql.Replace($"{prefix}.", "") : sql;
-        }
-    }
+    //        return ignorePrefix ? sql.Replace($"{prefix}.", "") : sql;
+    //    }
+    //}
 
-    internal class WhereCommand<T1, T2> : WhereCommand<T1>, IWhereCommand<T1, T2>
-    {
-        public WhereCommand(Dictionary<string, object> sqlPamater) : base(sqlPamater)
-        {
-        }
+    //internal class WhereCommand<T1, T2> : WhereCommand<T1>, IWhereCommand<T1, T2>
+    //{
+    //    public WhereCommand(Dictionary<string, object> sqlPamater) : base(sqlPamater)
+    //    {
+    //    }
 
-        public void Where(Expression<Func<T1, T2, bool>> predicate)
-        {
-            _whereProvider.Visit(predicate);
+    //    public void Where(Expression<Func<T1, T2, bool>> predicate)
+    //    {
+    //        _whereProvider.Visit(predicate);
 
-            _whereProvider.whereModel.Sql.Append(" and");
+    //        _whereProvider.whereModel.Sql.Append(" and");
 
-            prefix = _whereProvider.whereModel.Prefix;
+    //        prefix = _whereProvider.whereModel.Prefix;
 
-        }
-    }
+    //    }
+    //}
 
-    internal class WhereCommand<T1, T2, T3> : WhereCommand<T1, T2>, IWhereCommand<T1, T2, T3>
-    {
-        public WhereCommand(Dictionary<string, object> sqlPamater) : base(sqlPamater)
-        {
-        }
+    //internal class WhereCommand<T1, T2, T3> : WhereCommand<T1, T2>, IWhereCommand<T1, T2, T3>
+    //{
+    //    public WhereCommand(Dictionary<string, object> sqlPamater) : base(sqlPamater)
+    //    {
+    //    }
 
-        public void Where(Expression<Func<T1, T2, T3, bool>> predicate)
-        {
-            _whereProvider.Visit(predicate);
+    //    public void Where(Expression<Func<T1, T2, T3, bool>> predicate)
+    //    {
+    //        _whereProvider.Visit(predicate);
 
-            _whereProvider.whereModel.Sql.Append(" and");
+    //        _whereProvider.whereModel.Sql.Append(" and");
 
-            prefix = _whereProvider.whereModel.Prefix;
-        }
-    }
+    //        prefix = _whereProvider.whereModel.Prefix;
+    //    }
+    //}
 }

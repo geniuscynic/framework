@@ -80,11 +80,29 @@ namespace DoCare.Extension.DataBase.Utility
         public string Express => !string.IsNullOrEmpty(Prefix) ? $"{Prefix}.{ColumnName}" : ColumnName;
     }
 
+    public class ProviderModel
+    {
+        public int Start;
+        public readonly Dictionary<string, object> Parameter;
+
+        public readonly string DataParamterPrefix;
+
+
+        public ProviderModel(string dataParamterPrefix, Dictionary<string, object> parameter, int start)
+        {
+            this.DataParamterPrefix = dataParamterPrefix;
+            this.Start = start;
+            this.Parameter = parameter;
+        }
+    }
+
     public class WhereModel
     {
-        public StringBuilder Sql { get; set; }    = new StringBuilder();
+       
 
-        public Dictionary<string, object> Parameter { get; set; }     = new Dictionary<string, object>();
+        public StringBuilder Sql { get; set; } = new StringBuilder();
+
+
 
         public string Prefix { get; set; } = "";
 

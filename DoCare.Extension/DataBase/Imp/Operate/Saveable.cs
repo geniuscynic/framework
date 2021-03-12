@@ -15,7 +15,7 @@ using DoCare.Extension.DataBase.Utility;
 
 namespace DoCare.Extension.DataBase.Imp.Operate
 {
-    public class Saveable<T, TEntity>  : Provider, ISaveable<T>
+    public class Saveable<T, TEntity>  : BaseOperate, ISaveable<T>
     {
        
         protected readonly TEntity _model;
@@ -70,8 +70,8 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
             foreach (var p in existProperty)
             {
-                sql.Append($" {p.ColumnName} = {DbPrefix}{p.Parameter},");
-                SqlParameter.Add(p.Parameter, p.PropertyInfo.GetValue(_model));
+                sql.Append($" {p.ColumnName} = {_providerModel.DataParamterPrefix}{p.Parameter},");
+                _providerModel.Parameter.Add(p.Parameter, p.PropertyInfo.GetValue(_model));
             }
 
             sql.Remove(sql.Length - 1, 1);
@@ -80,8 +80,8 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
             foreach (var member in properties.Where(t => t.IsPrimaryKey))
             {
-                sql.Append($" {member.ColumnName} = {DbPrefix}{member.Parameter} and");
-                SqlParameter.Add(member.Parameter, member.PropertyInfo.GetValue(_model));
+                sql.Append($" {member.ColumnName} = {_providerModel.DataParamterPrefix}{member.Parameter} and");
+                _providerModel.Parameter.Add(member.Parameter, member.PropertyInfo.GetValue(_model));
             }
 
             sql.Remove(sql.Length - 3, 3);
@@ -91,7 +91,7 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
         public async Task<int> Execute()
         {
-            var command = new WriteableCommand(Connection, Build().ToString(), SqlParameter, Aop);
+            var command = new WriteableCommand(Connection, Build().ToString(), _providerModel.Parameter, Aop);
 
             return await command.Execute();
         }

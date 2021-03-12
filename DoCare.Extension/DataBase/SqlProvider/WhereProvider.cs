@@ -8,9 +8,16 @@ namespace DoCare.Extension.DataBase.SqlProvider
 
     public class WhereProvider : ExpressionVisitor
     {
+        private readonly ProviderModel _providerModel;
         //public List<WhereModel> Result = new List<WhereModel>();
 
-        public readonly WhereModel whereModel = new WhereModel();
+        public readonly WhereModel whereModel;
+
+        public WhereProvider(ProviderModel providerModel)
+        {
+            _providerModel = providerModel;
+            whereModel = new WhereModel();
+        }
 
         private static readonly Dictionary<ExpressionType, string> ExpressionTypeMapping = new Dictionary<ExpressionType, string>()
         {
@@ -22,8 +29,6 @@ namespace DoCare.Extension.DataBase.SqlProvider
             {ExpressionType.AndAlso, " and "},
             {ExpressionType.OrElse, " or "},
         };
-
-        private int start = 0;
 
         protected override Expression VisitBinary(BinaryExpression node)
         {
@@ -48,11 +53,11 @@ namespace DoCare.Extension.DataBase.SqlProvider
 
         private void AddConstant(object result)
         {
-            whereModel.Sql.Append($"{DatabaseFactory.ParamterSplit}p{start}");
+            whereModel.Sql.Append($"{_providerModel.DataParamterPrefix}p{_providerModel.Start}");
 
-            whereModel.Parameter[$"p{start}"] = result;
+            _providerModel.Parameter[$"p{_providerModel.Start}"] = result;
 
-            start++;
+            _providerModel.Start++;
 
         }
         protected override Expression VisitConstant(ConstantExpression node)

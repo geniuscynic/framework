@@ -12,13 +12,13 @@ using DoCare.Extension.DataBase.Utility;
 
 namespace DoCare.Extension.DataBase.Imp.Operate
 {
-    public class Deleteable<T> : Provider, IDeleteable<T>
+    public class Deleteable<T> : BaseOperate, IDeleteable<T>
     {
-        private readonly  IWhereCommand<T> whereCommand;
+        private readonly  IWhereCommand whereCommand;
 
         public Deleteable(IDbConnection connection) : base(connection)
         {
-            whereCommand = new WhereCommand<T>(SqlParameter);
+            whereCommand = new WhereCommand(_providerModel);
         }
 
         public IDeleteable<T> Where(Expression<Func<T, bool>> predicate)
@@ -43,7 +43,7 @@ namespace DoCare.Extension.DataBase.Imp.Operate
           
         }
 
-        public string Build()
+        private StringBuilder Build()
         {
             var sql = new StringBuilder();
 
@@ -53,7 +53,7 @@ namespace DoCare.Extension.DataBase.Imp.Operate
             sql.Append($"delete from {tableName}  ");
 
             //sql.Append(" where ");
-            var where = whereCommand.Build().Replace(DatabaseFactory.ParamterSplit, DbPrefix);
+            var where = whereCommand.Build();
 
             if (where.Length > 0)
             {
@@ -65,7 +65,7 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
                 foreach (var member in properties.Where(t => t.IsPrimaryKey))
                 {
-                    sql.Append($" {member.ColumnName} = {DbPrefix}{member.Parameter} and");
+                    sql.Append($" {member.ColumnName} = {_providerModel.DataParamterPrefix}{member.Parameter} and");
                 }
 
                 sql.Remove(sql.Length - 3, 3);
@@ -76,12 +76,12 @@ namespace DoCare.Extension.DataBase.Imp.Operate
             //sql.Remove(sql.Length - 3, 3);
 
 
-            return sql.ToString();
+            return sql;
         }
 
         public async Task<int> Execute()
         {
-            var command = new WriteableCommand(Connection, Build().ToString(), SqlParameter, Aop);
+            var command = new WriteableCommand(Connection, Build().ToString(), _providerModel.Parameter, Aop);
 
             return await command.Execute();
 

@@ -14,7 +14,7 @@ using DoCare.Extension.DataBase.Utility;
 
 namespace DoCare.Extension.DataBase.Imp.Operate
 {
-    public class QueryableProvider :  Provider, IQueryableProvider
+    public class QueryableProvider :  BaseOperate, IQueryableProvider
     {
         protected readonly string _alias;
         private readonly WhereCommand _whereCommand;
@@ -23,17 +23,21 @@ namespace DoCare.Extension.DataBase.Imp.Operate
         private readonly StringBuilder _selectField = new StringBuilder();
         private StringBuilder _joinSql = new StringBuilder();
 
+        
+
         public QueryableProvider(IDbConnection connection, string alias) : base(connection)
         {
+            
             _alias = alias;
-            _whereCommand = new WhereCommand(SqlParameter);
+            _whereCommand = new WhereCommand(_providerModel);
 
             _orderByCommand = new OrderByCommand();
+
         }
 
         public void Join<T1, T2>(string alias, Expression<Func<T1, T2, bool>> predicate)
         {
-            var joinCommand = new JoinCommand(alias, SqlParameter);
+            var joinCommand = new JoinCommand(alias, _providerModel);
             joinCommand.Join(predicate);
 
             _joinSql.Append(joinCommand.Build<T2>());
@@ -41,7 +45,7 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
         public void Join<T1, T2, T3>(string alias, Expression<Func<T1, T2, T3, bool>> predicate)
         {
-            var joinCommand = new JoinCommand(alias, SqlParameter);
+            var joinCommand = new JoinCommand(alias, _providerModel);
             joinCommand.Join(predicate);
 
             _joinSql.Append(joinCommand.Build<T3>());
@@ -49,7 +53,7 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
         public void Join<T1, T2, T3, T4>(string alias, Expression<Func<T1, T2, T3, T4, bool>> predicate)
         {
-            var joinCommand = new JoinCommand(alias, SqlParameter);
+            var joinCommand = new JoinCommand(alias, _providerModel);
             joinCommand.Join(predicate);
 
             _joinSql.Append(joinCommand.Build<T4>());
@@ -57,7 +61,7 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
         public void LeftJoin<T1, T2>(string alias, Expression<Func<T1, T2, bool>> predicate)
         {
-            var joinCommand = new JoinCommand(alias, SqlParameter);
+            var joinCommand = new JoinCommand(alias, _providerModel);
             joinCommand.Join(predicate);
 
             _joinSql.Append(joinCommand.Build<T2>());
@@ -65,7 +69,7 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
         public void LeftJoin<T1, T2, T3>(string alias, Expression<Func<T1, T2, T3, bool>> predicate)
         {
-            var joinCommand = new JoinCommand(alias, SqlParameter);
+            var joinCommand = new JoinCommand(alias, _providerModel);
             joinCommand.Join(predicate);
 
             _joinSql.Append(joinCommand.Build<T3>());
@@ -73,7 +77,7 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
         public void LeftJoin<T1, T2, T3, T4>(string alias, Expression<Func<T1, T2, T3, T4, bool>> predicate)
         {
-            var joinCommand = new JoinCommand(alias, SqlParameter);
+            var joinCommand = new JoinCommand(alias, _providerModel);
             joinCommand.Join(predicate);
 
             _joinSql.Append(joinCommand.Build<T4>());
@@ -161,7 +165,7 @@ namespace DoCare.Extension.DataBase.Imp.Operate
                 //prefix = t.Prefix;
             });
             _selectField.Remove(_selectField.Length - 1, 1);
-            return DatabaseFactory.CreateReaderableCommand<TResult>(Connection, Build<T>(), SqlParameter, Aop);
+            return DatabaseFactory.CreateReaderableCommand<TResult>(Connection, Build<T>(), _providerModel.Parameter, Aop);
         }
 
         public IReaderableCommand<TResult> Select<T, TResult>(Expression<Func<T, TResult>> predicate)
@@ -214,7 +218,7 @@ namespace DoCare.Extension.DataBase.Imp.Operate
             sql.Append($"select {selectSql} from {tableName} {_alias} {_joinSql}");
 
 
-            sql.Append(_whereCommand.Build(false).Replace(DatabaseFactory.ParamterSplit, DbPrefix));
+            sql.Append(_whereCommand.Build(false));
 
             sql.Append(_orderByCommand.Build(false));
 
@@ -224,42 +228,42 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
         public async Task<IEnumerable<T>> ExecuteQuery<T>()
         {
-            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build<T>(), SqlParameter, Aop);
+            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build<T>(), _providerModel.Parameter, Aop);
 
             return await command.ExecuteQuery();
         }
 
         public async Task<T> ExecuteFirst<T>()
         {
-            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build<T>(), SqlParameter, Aop);
+            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build<T>(), _providerModel.Parameter, Aop);
 
             return await command.ExecuteFirst();
         }
 
         public async Task<T> ExecuteFirstOrDefault<T>()
         {
-            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build<T>(), SqlParameter, Aop);
+            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build<T>(), _providerModel.Parameter, Aop);
 
             return await command.ExecuteFirstOrDefault();
         }
 
         public async Task<T> ExecuteSingle<T>()
         {
-            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build<T>(), SqlParameter, Aop);
+            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build<T>(), _providerModel.Parameter, Aop);
 
             return await command.ExecuteSingle();
         }
 
         public async Task<T> ExecuteSingleOrDefault<T>()
         {
-            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build<T>(), SqlParameter, Aop);
+            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build<T>(), _providerModel.Parameter, Aop);
 
             return await command.ExecuteSingleOrDefault();
         }
 
         public async Task<(IEnumerable<T> data, int total)> ToPageList<T>(int pageIndex, int pageSize)
         {
-            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build<T>(), SqlParameter, Aop);
+            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build<T>(), _providerModel.Parameter, Aop);
 
             return await command.ToPageList(pageIndex, pageSize);
 

@@ -69,6 +69,19 @@ namespace DoCare.Extension.DataBase
             return DatabaseFactory.CreateQueryable<T>(_connection, Aop);
         }
 
+        public SimpleQueryable<T> Queryable<T>(string sql)
+        {
+            return Queryable<T>(sql, new Dictionary<string, object>());
+        }
+
+        public SimpleQueryable<T> Queryable<T>(string sql, Dictionary<string, object> sqlParameter)
+        {
+            return new SimpleQueryable<T>(_connection, sql, sqlParameter)
+            {
+                Aop = Aop
+            };
+        }
+
         public IComplexQueryable<T> ComplexQueryable<T>(string alias)
         {
             return DatabaseFactory.CreateComplexQueryable<T>(_connection, Aop, alias);
@@ -80,18 +93,7 @@ namespace DoCare.Extension.DataBase
             return DatabaseFactory.CreateDeleteable<T>(_connection, Aop);
         }
 
-        public SimpleQueryable<T> SimpleQueryable<T>(string sql)
-        {
-            return SimpleQueryable<T>(sql, new Dictionary<string, object>());
-        }
-
-        public SimpleQueryable<T> SimpleQueryable<T>(string sql, Dictionary<string, object> sqlParameter)
-        {
-            return new SimpleQueryable<T>(_connection, sql, sqlParameter)
-            {
-                Aop = Aop
-            };
-        }
+        
 
         public IDbConnection GetConnection()
         {

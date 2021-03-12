@@ -16,7 +16,7 @@ namespace DoCare.Extension.DataBase.Imp.Command.Oracle
 
         public override async Task<(IEnumerable<T> data, int total)> ToPageList(int pageIndex, int pageSize)
         {
-            var countSql = $"select count(1) from {_sql} t";
+            var countSql = $"select count(1) from ({_sql}) t";
 
             var total = await _connection.ExecuteScalarAsync<int>(countSql, _sqlParameter);
 

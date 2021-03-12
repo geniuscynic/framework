@@ -13,7 +13,7 @@ using DoCare.Extension.DataBase.Utility;
 
 namespace DoCare.Extension.DataBase.Imp.Operate
 {
-    public class Insertable<T, TEntity> : Provider, IInsertable<T>
+    public class Insertable<T, TEntity> : BaseOperate, IInsertable<T>
     {
 
         protected readonly TEntity _model;
@@ -40,8 +40,8 @@ namespace DoCare.Extension.DataBase.Imp.Operate
                 }
 
                 columnList.Add(p.ColumnName);
-                parameterList.Add($"{DbPrefix}{p.Parameter}");
-                SqlParameter.Add(p.Parameter, p.PropertyInfo.GetValue(_model));
+                parameterList.Add($"{_providerModel.DataParamterPrefix}{p.Parameter}");
+                _providerModel.Parameter.Add(p.Parameter, p.PropertyInfo.GetValue(_model));
                 //Console.WriteLine("Name:{0} Value:{1}", p.Name, p.GetValue(_model));
             }
 
@@ -55,7 +55,7 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
         public async Task<int> Execute()
         {
-            var command = new WriteableCommand(Connection, Build().ToString(), SqlParameter, Aop);
+            var command = new WriteableCommand(Connection, Build().ToString(), _providerModel.Parameter, Aop);
           
             return await command.Execute();
         }

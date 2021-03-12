@@ -24,7 +24,6 @@ namespace DoCare.Extension.DataBase.Imp.Operate
         public ComplexQueryable(IQueryableProvider provider)
         {
             _provider = provider;
-            _provider = provider;
         }
 
 

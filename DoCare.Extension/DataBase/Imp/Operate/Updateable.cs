@@ -13,17 +13,17 @@ using DoCare.Extension.DataBase.Utility;
 
 namespace DoCare.Extension.DataBase.Imp.Operate
 {
-    public class Updateable<T> : Provider, IUpdateable<T>
+    public class Updateable<T> : BaseOperate, IUpdateable<T>
     {
         
-        private readonly IWhereCommand<T> whereCommand;
+        private readonly IWhereCommand whereCommand;
 
         private readonly StringBuilder setSql = new StringBuilder();
 
 
         public Updateable(IDbConnection connection) : base(connection)
         {
-            whereCommand = new WhereCommand<T>(SqlParameter);
+            whereCommand = new WhereCommand(_providerModel);
         }
 
         public IUpdateable<T> SetColumns<TResult>(Expression<Func<TResult>> predicate)
@@ -41,9 +41,9 @@ namespace DoCare.Extension.DataBase.Imp.Operate
             {
                 var values = types.GetProperty(t.Parameter)?.GetValue(model);
 
-                setSql.Append($" {t.ColumnName} = {DbPrefix}{t.Parameter},");
+                setSql.Append($" {t.ColumnName} = {_providerModel.DataParamterPrefix}{t.Parameter},");
 
-                SqlParameter[t.Parameter] = values;
+                _providerModel.Parameter[t.Parameter] = values;
             });
 
             return this;
@@ -85,7 +85,7 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
             sql.Remove(sql.Length - 1, 1);
 
-            sql.Append(whereCommand.Build().Replace(DatabaseFactory.ParamterSplit, DbPrefix));
+            sql.Append(whereCommand.Build());
 
             
             return sql;
@@ -93,7 +93,7 @@ namespace DoCare.Extension.DataBase.Imp.Operate
 
         public async Task<int> Execute()
         {
-            var command = new WriteableCommand(Connection, Build().ToString(), SqlParameter, Aop);
+            var command = new WriteableCommand(Connection, Build().ToString(), _providerModel.Parameter, Aop);
 
             return await command.Execute();
         }
