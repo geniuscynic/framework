@@ -21,6 +21,16 @@ namespace Framework.test
             public string content { get; set; }
         }
 
+        [Table(Sql)]
+        class Pepple
+        {
+            public const string Sql = "Select * from blog";
+
+            public DateTime author { get; set; }
+            public string title { get; set; }
+            public string content { get; set; }
+        }
+
         static void Main(string[] args)
         {
             var a = "1";
@@ -50,23 +60,26 @@ namespace Framework.test
             //    .OrderByDesc(t => t.content)
             //    .ExecuteFirst();
 
-            dbclient.ComplexQueryable<Blog>("t1")
-                .Join<User>("t2",(t1, t2) => t1.content == t2.title && t1.author == DateTime.Now)
-                .LeftJoin<User>("t3", (t1, t2, t3)=> t1.content == t3.content)
-                .Where((t1, t2, _)=> t1.content == t2.content)
-                .Where((t1, t2, t3) => t1.title == t3.content)
-                .Where((t1, t2, t3) => t1.title == "aaa")
-                .Where((t1, t2, t3) => t2.content == "bbb")
-                .Select((t1, t2, t3) =>
-                    new 
-                    {
-                        a = t1.content,
-                        b = t2.author,
-                        c = t3.title
+            dbclient.ComplexQueryable<Pepple>("p").Where(t=>t.content == "c").ExecuteFirst();
 
-                    }
-                )
-                .ToPageList(1,10);
+
+            //dbclient.ComplexQueryable<Blog>("t1")
+            //    .Join<User>("t2",(t1, t2) => t1.content == t2.title && t1.author == DateTime.Now)
+            //    .LeftJoin<User>("t3", (t1, t2, t3)=> t1.content == t3.content)
+            //    .Where((t1, t2, _)=> t1.content == t2.content)
+            //    .Where((t1, t2, t3) => t1.title == t3.content)
+            //    .Where((t1, t2, t3) => t1.title == "aaa")
+            //    .Where((t1, t2, t3) => t2.content == "bbb")
+            //    .Select((t1, t2, t3) =>
+            //        new 
+            //        {
+            //            a = t1.content,
+            //            b = t2.author,
+            //            c = t3.title
+
+            //        }
+            //    )
+            //    .ToPageList(1,10);
 
 
             //dbclient.Queryable<Blog>().Where(t =>  t.title == a)

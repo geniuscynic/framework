@@ -14,7 +14,7 @@ using DoCare.Extension.DataBase.Utility;
 
 namespace DoCare.Extension.DataBase.Imp.Operate
 {
-    public class QueryableProvider :  BaseOperate, IQueryableProvider
+    internal class QueryableProvider :  BaseOperate, IQueryableProvider
     {
         protected readonly string _alias;
         private readonly WhereCommand _whereCommand;
@@ -214,6 +214,10 @@ namespace DoCare.Extension.DataBase.Imp.Operate
                 selectSql.Remove(selectSql.Length - 1, 1);
             }
 
+            if (tableName.Length>10 && tableName.Substring(0,10).ToLower().StartsWith("select"))
+            {
+                tableName = $"({tableName})";
+            }
 
             sql.Append($"select {selectSql} from {tableName} {_alias} {_joinSql}");
 
