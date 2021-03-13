@@ -1,0 +1,16 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="DoCare.Zkzx.Core.Database" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="DoCare.Zkzx.Core.Database" #>
+<#@ output extension=".cs" #>
+
+
+<#
+   var connectStr = "Server=localhost;Database=blog;Trusted_Connection=True;MultipleActiveResultSets=true";
+            var provider = "MsSql";
+
+            var tool = new CodeGenerationTools(connectStr, provider);
+#>

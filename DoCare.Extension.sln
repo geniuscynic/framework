@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Framework.test", "Framework
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DoCare.Extension.SqlHelper", "DoCare.Extension.SqlHelper\DoCare.Extension.SqlHelper.csproj", "{917C2B70-55F3-48C3-91F6-E4780CCE9712}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGenerator", "CodeGenerator\CodeGenerator.csproj", "{B4E5AECE-A4CB-47EA-A7A6-A930A8B26B91}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeGenerator", "CodeGenerator\CodeGenerator.csproj", "{B4E5AECE-A4CB-47EA-A7A6-A930A8B26B91}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DoCare.Zkzx.Core.Database", "DoCare.Zkzx.Core.Database\DoCare.Zkzx.Core.Database.csproj", "{44D6622D-C72C-456F-9B44-EC6A25CF7337}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{B4E5AECE-A4CB-47EA-A7A6-A930A8B26B91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4E5AECE-A4CB-47EA-A7A6-A930A8B26B91}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4E5AECE-A4CB-47EA-A7A6-A930A8B26B91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44D6622D-C72C-456F-9B44-EC6A25CF7337}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44D6622D-C72C-456F-9B44-EC6A25CF7337}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44D6622D-C72C-456F-9B44-EC6A25CF7337}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44D6622D-C72C-456F-9B44-EC6A25CF7337}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

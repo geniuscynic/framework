@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using DoCare.Extension.DataBase;
+using Dapper;
+using DoCare.Zkzx.Core.Database;
 
 namespace CodeGenerator
 {
+
     public class TableDefind
     {
         public string ColumnName { get; set; }
@@ -43,8 +45,8 @@ and t.name='{0}' order by c.colorder;";
 
         public async Task<IEnumerable<TableDefind>> GetTableDefine(string tableName)
         {
-            //return await client.GetConnection().QueryAsync<TableDefind>(string.Format(MsSql, tableName));
-            return  await client.SimpleQueryable<TableDefind>(MsSql).ExecuteQuery();
+            return await client.Queryable<TableDefind>(string.Format(MsSql, tableName)).ExecuteQuery();
+            //return  await client.SimpleQueryable<TableDefind>(MsSql).ExecuteQuery();
         }
 
        

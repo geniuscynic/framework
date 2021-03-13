@@ -6,15 +6,30 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DoCare.Extension\DoCare.Extension.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DoCare.Zkzx.Core.Database\DoCare.Zkzx.Core.Database.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="EntityTemplate.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>EntityTemplate.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="GetTable\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="EntityTemplate.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EntityTemplate.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
 
 </Project>
