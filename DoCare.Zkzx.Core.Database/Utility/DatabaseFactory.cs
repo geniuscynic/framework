@@ -88,8 +88,8 @@ namespace DoCare.Zkzx.Core.Database.Utility
             {
                 SqlConnection _ => new SqlQueryable<T>(connection) { Aop = aop },
                 MySqlConnection _ => new MySqlQueryable<T>(connection) { Aop = aop },
-                OracleConnection _ => new OracleQueryable<T>(connection) { Aop = aop },
-                _ => new Queryable<T>(connection) { Aop = aop }
+                _ => new OracleQueryable<T>(connection) { Aop = aop },
+               
             };
         }
 

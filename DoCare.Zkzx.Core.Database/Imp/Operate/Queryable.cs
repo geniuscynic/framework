@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using DoCare.Zkzx.Core.Database.Imp.Command;
+using DoCare.Zkzx.Core.Database.Imp.Command.MsSql;
 using DoCare.Zkzx.Core.Database.Interface.Command;
 using DoCare.Zkzx.Core.Database.Interface.Operate;
 using DoCare.Zkzx.Core.Database.SqlProvider;
@@ -14,7 +15,7 @@ using DoCare.Zkzx.Core.Database.Utility;
 
 namespace DoCare.Zkzx.Core.Database.Imp.Operate
 {
-    public class Queryable<T> : BaseOperate, IDoCareQueryable<T>
+    public abstract class Queryable<T> : BaseOperate, IDoCareQueryable<T>
     {
         private readonly IWhereCommand whereCommand;
         private readonly IOrderByCommand<T> orderByCommand;
@@ -58,7 +59,7 @@ namespace DoCare.Zkzx.Core.Database.Imp.Operate
 
         public IDoCareQueryable<T> OrderBy<TResult>(Expression<Func<T, TResult>> predicate)
         {
-            orderByCommand.OrderBy(predicate);
+            orderByCommand.AscBy(predicate);
 
 
             return this;
@@ -66,10 +67,16 @@ namespace DoCare.Zkzx.Core.Database.Imp.Operate
 
         public IDoCareQueryable<T> OrderByDesc<TResult>(Expression<Func<T, TResult>> predicate)
         {
-            orderByCommand.OrderByDesc(predicate);
+            orderByCommand.DescBy(predicate);
 
             return this;
         }
+
+        protected abstract IReaderableCommand<TResult> CreateReaderableCommand<TResult>(IDbConnection connection, StringBuilder sql,
+            Dictionary<string, object> sqlParameter, Aop aop);
+            //{
+             //return new ReaderableCommand<T>(connection, Build(), _providerModel.Parameter, aop);
+        //}
 
         public IReaderableCommand<TResult> Select<TResult>(Expression<Func<T,TResult>> predicate)
         {
@@ -83,7 +90,8 @@ namespace DoCare.Zkzx.Core.Database.Imp.Operate
                 prefix = t.Prefix;
             });
             _selectField.Remove(_selectField.Length - 1, 1);
-            return DatabaseFactory.CreateReaderableCommand<TResult>(Connection, Build(), _providerModel.Parameter, Aop);
+            return CreateReaderableCommand<TResult>(Connection, Build(), _providerModel.Parameter, Aop);
+            // return DatabaseFactory.CreateReaderableCommand<TResult>(Connection, Build(), _providerModel.Parameter, Aop);
         }
 
 
@@ -123,42 +131,48 @@ namespace DoCare.Zkzx.Core.Database.Imp.Operate
 
         public async Task<IEnumerable<T>> ExecuteQuery()
         {
-            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build(), _providerModel.Parameter, Aop);
+            var command = CreateReaderableCommand<T>(Connection, Build(), _providerModel.Parameter, Aop);
+            //DatabaseFactory.CreateReaderableCommand<T>(Connection, Build(), _providerModel.Parameter, Aop);
 
             return await command.ExecuteQuery();
         }
 
         public async Task<T> ExecuteFirst()
         {
-            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build(), _providerModel.Parameter, Aop);
+            var command = CreateReaderableCommand<T>(Connection, Build(), _providerModel.Parameter, Aop);
+            //DatabaseFactory.CreateReaderableCommand<T>(Connection, Build(), _providerModel.Parameter, Aop);
 
             return await command.ExecuteFirst();
         }
 
         public async Task<T> ExecuteFirstOrDefault()
         {
-            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build(), _providerModel.Parameter, Aop);
+            var command = CreateReaderableCommand<T>(Connection, Build(), _providerModel.Parameter, Aop);
+            //DatabaseFactory.CreateReaderableCommand<T>(Connection, Build(), _providerModel.Parameter, Aop);
 
             return await command.ExecuteFirstOrDefault();
         }
 
         public async Task<T> ExecuteSingle()
         {
-            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build(), _providerModel.Parameter, Aop);
+            var command = CreateReaderableCommand<T>(Connection, Build(), _providerModel.Parameter, Aop);
+            //DatabaseFactory.CreateReaderableCommand<T>(Connection, Build(), _providerModel.Parameter, Aop);
 
             return await command.ExecuteSingle();
         }
 
         public async Task<T> ExecuteSingleOrDefault()
         {
-            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build(), _providerModel.Parameter, Aop);
+            var command = CreateReaderableCommand<T>(Connection, Build(), _providerModel.Parameter, Aop);
+            //DatabaseFactory.CreateReaderableCommand<T>(Connection, Build(), _providerModel.Parameter, Aop);
 
             return await command.ExecuteSingleOrDefault();
         }
 
         public async Task<(IEnumerable<T> data, int total)> ToPageList(int pageIndex, int pageSize)
         {
-            var command = DatabaseFactory.CreateReaderableCommand<T>(Connection, Build(), _providerModel.Parameter, Aop);
+            var command = CreateReaderableCommand<T>(Connection, Build(), _providerModel.Parameter, Aop);
+            //DatabaseFactory.CreateReaderableCommand<T>(Connection, Build(), _providerModel.Parameter, Aop);
 
             return await command.ToPageList(pageIndex, pageSize);
 

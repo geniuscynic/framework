@@ -115,42 +115,42 @@ namespace DoCare.Zkzx.Core.Database.Imp.Operate
 
         public void OrderBy<T, TResult>(Expression<Func<T, TResult>> predicate)
         {
-            _orderByCommand.OrderBy(predicate);
+            _orderByCommand.AscBy(predicate);
         }
 
         public void OrderBy<T1, T2, TResult>(Expression<Func<T1, T2, TResult>> predicate)
         {
-            _orderByCommand.OrderBy(predicate);
+            _orderByCommand.AscBy(predicate);
         }
 
         public void OrderBy<T1, T2, T3, TResult>(Expression<Func<T1, T2, T3, TResult>> predicate)
         {
-            _orderByCommand.OrderBy(predicate);
+            _orderByCommand.AscBy(predicate);
         }
 
         public void OrderBy<T1, T2, T3, T4, TResult>(Expression<Func<T1, T2, T3, T4, TResult>> predicate)
         {
-            _orderByCommand.OrderBy(predicate);
+            _orderByCommand.AscBy(predicate);
         }
 
         public void OrderByDesc<T, TResult>(Expression<Func<T, TResult>> predicate)
         {
-            _orderByCommand.OrderByDesc(predicate);
+            _orderByCommand.DescBy(predicate);
         }
 
         public void OrderByDesc<T1, T2, TResult>(Expression<Func<T1, T2, TResult>> predicate)
         {
-            _orderByCommand.OrderByDesc(predicate);
+            _orderByCommand.DescBy(predicate);
         }
 
         public void OrderByDesc<T1, T2, T3, TResult>(Expression<Func<T1, T2, T3, TResult>> predicate)
         {
-            _orderByCommand.OrderByDesc(predicate);
+            _orderByCommand.DescBy(predicate);
         }
 
         public void OrderByDesc<T1, T2, T3, T4, TResult>(Expression<Func<T1, T2, T3, T4, TResult>> predicate)
         {
-            _orderByCommand.OrderByDesc(predicate);
+            _orderByCommand.DescBy(predicate);
         }
 
         private IReaderableCommand<TResult> VisitSelect<T, TResult>(Expression predicate)
